@@ -216,6 +216,70 @@
     border-radius: 999px;
     cursor: help;
   }
+  .access-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: var(--surface-sunk);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .access-badge svg { width: 11px; height: 11px; }
+
+  /* login gate */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-md);
+    padding: 28px 26px;
+    text-align: center;
+  }
+  .login-card img { height: 42px; margin-bottom: 14px; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .login-card img { filter: invert(1) brightness(1.05); }
+  }
+  :root[data-theme="dark"] .login-card img { filter: invert(1) brightness(1.05); }
+  .login-card h2 { font-size: 19px; margin-bottom: 4px; }
+  .login-card p.lead { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }
+  .login-card .field { text-align: left; }
+  .login-card input[type="password"] {
+    width: 100%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-raised);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 11px 12px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .login-error {
+    font-size: 12.5px;
+    color: var(--status-todo);
+    background: var(--status-todo-soft);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+  }
+  .login-card .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
+  .login-note {
+    margin-top: 18px;
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.5;
+  }
 
   .btn {
     display: inline-flex;
@@ -1003,11 +1067,66 @@
     back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>',
     grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>',
     cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16l-4-4-4 4"></path><path d="M12 12v9"></path><path d="M20.4 18.4A5 5 0 0 0 18 9h-1.3A8 8 0 1 0 3 16.3"></path></svg>',
-    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>'
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+    logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>'
   };
 
   var DOWNLOAD_NAME = "kanban-diretoria-operacoes.html";
   var LS_KEY = "kanban-diretoria-operacoes-v1";
+
+  // ---------- access gate ----------
+  // This board has no server, so this is a lightweight door — enough to
+  // stop someone from casually opening the wrong contract, not a real
+  // security boundary (anyone reading this file's source can see the
+  // hashes and, with a bit of effort, work back to a password or just
+  // patch the check out). Do not put anything truly sensitive behind it.
+  //
+  // Passwords are kept as a non-cryptographic hash (FNV-1a) so they are
+  // not sitting here in plain text. To change or add one: open this file
+  // in a browser, paste `hashPass("novaSenha")` in the dev console, and
+  // swap the resulting hex into the matching entry's `hash` below.
+  function hashPass(str) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h.toString(16);
+  }
+  var ACCESS_LS_KEY = "kanban-diretoria-access-v1";
+  var ACCESS_GROUPS = [
+    { id: "admin", label: "Diretoria — acesso total", companies: "ALL", hash: "b23269fc" },
+    { id: "arm", label: "ARM Rio", companies: ["arm"], hash: "9f774684" },
+    { id: "allseas", label: "All Seas", companies: ["allseas"], hash: "fae1e9b1" },
+    { id: "especialistas", label: "Especialistas", companies: ["especialistas"], hash: "c3ca0778" },
+    { id: "equinor-spot", label: "Equinor / SPOT", companies: ["equinor", "spot"], hash: "48b5b274" },
+    { id: "tps-prime", label: "TPS / Prime", companies: ["tps", "prime"], hash: "635ad810" }
+  ];
+  var ACCESS = null;  // null until login; otherwise one of the ACCESS_GROUPS entries
+  var loginError = "";
+
+  function restoreAccess() {
+    try {
+      var id = localStorage.getItem(ACCESS_LS_KEY);
+      if (!id) return null;
+      return ACCESS_GROUPS.find(function (g) { return g.id === id; }) || null;
+    } catch (e) { return null; }
+  }
+  function setAccess(group) {
+    ACCESS = group;
+    try {
+      if (group) localStorage.setItem(ACCESS_LS_KEY, group.id);
+      else localStorage.removeItem(ACCESS_LS_KEY);
+    } catch (e) { /* ignore */ }
+  }
+  function allowedCompanies() {
+    if (!ACCESS || ACCESS.companies === "ALL") return COMPANIES;
+    return COMPANIES.filter(function (c) { return ACCESS.companies.indexOf(c.id) !== -1; });
+  }
+  function isCompanyAllowed(companyId) {
+    return !ACCESS || ACCESS.companies === "ALL" || ACCESS.companies.indexOf(companyId) !== -1;
+  }
 
   var app = document.getElementById("app");
   var STATE = null;
@@ -1439,7 +1558,7 @@
       if (!raw) return;
       var saved = JSON.parse(raw);
       if (!saved) return;
-      if (saved.view === "board" || saved.view === "cover") ui.view = saved.view;
+      if (saved.view === "board" || saved.view === "cover" || saved.view === "analytics") ui.view = saved.view;
       if (saved.filter && COMPANY_BY_ID[saved.filter]) ui.filter = saved.filter;
       if (saved.modal && saved.modal.cardId && findCard(saved.modal.cardId)) ui.modal = saved.modal;
     } catch (e) { /* ignore */ }
@@ -1526,6 +1645,7 @@
   // ---------- mutations ----------
 
   function addCard(data) {
+    if (!isCompanyAllowed(data.company)) return;
     var card = {
       id: uid(),
       company: data.company,
@@ -1544,6 +1664,7 @@
   function moveCard(id, status) {
     var c = findCard(id);
     if (!c || c.status === status) return;
+    if (!isCompanyAllowed(c.company)) return;
     c.status = status;
     render();
     persist();
@@ -1552,6 +1673,7 @@
   function updateCardText(id, text, sub) {
     var c = findCard(id);
     if (!c) return;
+    if (!isCompanyAllowed(c.company)) return;
     c.text = text.trim() || c.text;
     c.sub = (sub || "").trim();
     render();
@@ -1562,6 +1684,7 @@
   function deleteCard(id) {
     var idx = STATE.cards.findIndex(function (c) { return c.id === id; });
     if (idx < 0) return;
+    if (!isCompanyAllowed(STATE.cards[idx].company)) return;
     STATE.cards.splice(idx, 1);
     ui.modal = null;
     ui.confirmDeleteCard = null;
@@ -1601,6 +1724,7 @@
   async function addEvidenceFiles(cardId, fileList) {
     var card = findCard(cardId);
     if (!card) return;
+    if (!isCompanyAllowed(card.company)) return;
     var files = Array.prototype.slice.call(fileList);
     var added = 0;
     for (var i = 0; i < files.length; i++) {
@@ -1640,6 +1764,7 @@
   function deleteEvidence(cardId, evId) {
     var card = findCard(cardId);
     if (!card) return;
+    if (!isCompanyAllowed(card.company)) return;
     var idx = (card.evidence || []).findIndex(function (e) { return e.id === evId; });
     if (idx < 0) return;
     card.evidence.splice(idx, 1);
@@ -1661,6 +1786,7 @@
     var byCompany = {};
     COMPANIES.forEach(function (c) { byCompany[c.id] = { total: 0, done: 0 }; });
     STATE.cards.forEach(function (c) {
+      if (!isCompanyAllowed(c.company)) return;  // outside this login's contracts — not counted at all
       if (!byCompany[c.company]) byCompany[c.company] = { total: 0, done: 0 };
       byCompany[c.company].total++;
       if (c.status === "done") byCompany[c.company].done++;
@@ -1675,6 +1801,10 @@
   // ---------- render ----------
 
   function render() {
+    if (!ACCESS) {
+      app.innerHTML = renderLogin();
+      return;
+    }
     var stats = computeStats(null);
     app.innerHTML =
       renderTopbar(stats) +
@@ -1687,6 +1817,24 @@
       '<div class="toast-wrap" id="toast-wrap"></div>';
     renderToasts();
     applyPendingFocus();
+  }
+
+  function renderLogin() {
+    return (
+      '<div class="login-screen">' +
+      '<div class="login-card">' +
+      '<img src="' + LOGO_DATA_URI + '" alt="Triunfo Logística" />' +
+      "<h2>KANBAN Diretoria de Operações</h2>" +
+      '<p class="lead">Digite a senha do seu contrato para abrir o quadro.</p>' +
+      (loginError ? '<div class="login-error">' + escapeHtml(loginError) + "</div>" : "") +
+      '<form id="login-form">' +
+      '<div class="field"><input id="login-pass" type="password" placeholder="Senha de acesso" autofocus autocomplete="off" /></div>' +
+      '<button type="submit" class="btn btn-primary">Entrar</button>' +
+      "</form>" +
+      '<p class="login-note">Não sabe a senha do seu contrato? Fale com a Diretoria de Operações.</p>' +
+      "</div>" +
+      "</div>"
+    );
   }
 
   function renderTopbar(stats) {
@@ -1710,6 +1858,8 @@
         : "") +
       '<button class="btn" data-action="download-html" title="Baixa este quadro como um arquivo HTML editável, com as ações e evidências atuais">' + ICONS.download + " Baixar HTML</button>" +
       '<button class="btn btn-primary" data-action="open-add"' + (READONLY ? " disabled" : "") + ">" + ICONS.plus + " Nova ação</button>" +
+      '<span class="access-badge" title="Acesso logado neste navegador">' + ICONS.lock + escapeHtml(ACCESS.label) + "</span>" +
+      '<button class="btn btn-ghost btn-sm" data-action="logout" title="Sair deste acesso">' + ICONS.logout + " Sair</button>" +
       "</div>" +
       "</div>" +
       "</div>"
@@ -1719,7 +1869,7 @@
   // ---------- cover ----------
 
   function renderCover(stats) {
-    var cards = COMPANIES.map(function (c) {
+    var cards = allowedCompanies().map(function (c) {
       var d = stats.byCompany[c.id] || { total: 0, done: 0 };
       var todo = 0, doing = 0;
       STATE.cards.forEach(function (card) {
@@ -1763,9 +1913,11 @@
       "</div>" +
       "</div>" +
       '<div class="contract-grid">' + cards + "</div>" +
-      '<button class="all-contracts" data-action="open-all">' + ICONS.grid +
-      "<span><b>Todos os contratos</b>Quadro completo com as " + stats.total + " ações</span>" +
-      "</button>" +
+      (allowedCompanies().length > 1
+        ? '<button class="all-contracts" data-action="open-all">' + ICONS.grid +
+          "<span><b>" + (ACCESS.companies === "ALL" ? "Todos os contratos" : "Meus contratos") + "</b>Quadro completo com as " + stats.total + " ações</span>" +
+          "</button>"
+        : "") +
       "</div>"
     );
   }
@@ -1797,7 +1949,7 @@
       (c
         ? '<span class="board-title"><span class="contract-plate sm">' + companyMark(c) + "</span>" +
           '<span class="bt-text"><b>' + escapeHtml(c.name) + "</b><span>" + escapeHtml(c.client) + "</span></span></span>"
-        : '<span class="board-title"><span class="bt-text"><b>Todos os contratos</b><span>Visão geral</span></span></span>') +
+        : '<span class="board-title"><span class="bt-text"><b>' + (ACCESS.companies === "ALL" ? "Todos os contratos" : "Meus contratos") + "</b><span>Visão geral</span></span></span>") +
       "</div>";
     return head + renderStats(stats) + renderFilters() + renderBoard();
   }
@@ -1827,7 +1979,7 @@
   }
 
   function renderCompanyBreakdown(stats) {
-    var rows = COMPANIES.map(function (c) {
+    var rows = allowedCompanies().map(function (c) {
       var todo = 0, doing = 0, done = 0;
       STATE.cards.forEach(function (card) {
         if (card.company !== c.id) return;
@@ -1860,7 +2012,19 @@
     );
   }
 
-  function renderEvolutionChart(history) {
+  function renderEvolutionChart(rawHistory) {
+    // Entries always carry every contract's numbers (recorded off the full
+    // board, regardless of who made the edit); scope them down to this
+    // login's contracts before charting anything.
+    var history = (rawHistory || []).map(function (e) {
+      if (!ACCESS || ACCESS.companies === "ALL") return e;
+      var total = 0, done = 0;
+      ACCESS.companies.forEach(function (id) {
+        var d = e.byCompany && e.byCompany[id];
+        if (d) { total += d.total; done += d.done; }
+      });
+      return { date: e.date, total: total, done: done };
+    });
     if (!history || history.length < 2) {
       return (
         '<div class="company-progress evo-empty">' +
@@ -1901,8 +2065,10 @@
   }
 
   function renderFilters() {
+    var options = allowedCompanies();
+    if (options.length <= 1) return "";
     var all = '<button class="chip all' + (ui.filter === null ? " active" : "") + '" data-action="filter-all">Todas</button>';
-    var chips = COMPANIES.map(function (c) {
+    var chips = options.map(function (c) {
       var active = ui.filter === c.id;
       return (
         '<button class="chip' + (active ? " active" : "") + '" data-action="toggle-filter" data-company="' + c.id + '">' +
@@ -1916,6 +2082,7 @@
   function cardsForStatus(statusId) {
     return STATE.cards.filter(function (c) {
       if (c.status !== statusId) return false;
+      if (!isCompanyAllowed(c.company)) return false;
       if (ui.filter && c.company !== ui.filter) return false;
       return true;
     });
@@ -2014,7 +2181,7 @@
   }
 
   function renderAddModal() {
-    var companyOptions = COMPANIES.map(function (c) { return '<option value="' + c.id + '">' + escapeHtml(c.label) + "</option>"; }).join("");
+    var companyOptions = allowedCompanies().map(function (c) { return '<option value="' + c.id + '">' + escapeHtml(c.label) + "</option>"; }).join("");
     var statusOptions = STATUSES.map(function (s) { return '<option value="' + s.id + '">' + escapeHtml(s.label) + "</option>"; }).join("");
     return (
       '<div class="overlay" data-action="close-modal-backdrop">' +
@@ -2149,6 +2316,7 @@
       return;
     }
     if (action === "open-contract") {
+      if (!isCompanyAllowed(el.dataset.company)) return;
       ui.view = "board";
       ui.filter = el.dataset.company;
       render();
@@ -2165,6 +2333,14 @@
     if (action === "go-analytics") {
       ui.view = "analytics";
       ui.confirmDeleteCard = null;
+      render();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "logout") {
+      setAccess(null);
+      ui = { view: "cover", filter: null, modal: null, confirmDeleteCard: null };
+      loginError = "";
       render();
       window.scrollTo(0, 0);
       return;
@@ -2260,6 +2436,30 @@
   });
 
   document.addEventListener("submit", function (e) {
+    if (e.target && e.target.id === "login-form") {
+      e.preventDefault();
+      var input = document.getElementById("login-pass");
+      var pass = input ? input.value : "";
+      if (!pass) return;
+      var hash = hashPass(pass);
+      var group = ACCESS_GROUPS.find(function (g) { return g.hash === hash; });
+      if (!group) {
+        loginError = "Senha inválida. Confira com a Diretoria de Operações.";
+        render();
+        return;
+      }
+      loginError = "";
+      setAccess(group);
+      if (allowedCompanies().length === 1) {
+        ui.view = "board";
+        ui.filter = allowedCompanies()[0].id;
+      } else {
+        ui.view = "cover";
+        ui.filter = null;
+      }
+      render();
+      return;
+    }
     if (e.target && e.target.id === "add-form") {
       e.preventDefault();
       var company = document.getElementById("f-company").value;
@@ -2284,6 +2484,11 @@
   (async function boot() {
     await initCapability();
     STATE = loadState();
+    ACCESS = restoreAccess();
+    if (ACCESS && allowedCompanies().length === 1) {
+      ui.view = "board";
+      ui.filter = allowedCompanies()[0].id;
+    }
     restoreUiAfterReload();
     try { sessionStorage.removeItem("kanban-reopen"); } catch (e) { /* ignore */ }
     render();
