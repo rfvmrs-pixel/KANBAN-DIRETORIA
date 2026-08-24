@@ -529,6 +529,24 @@
   }
   .cp-bar > span { display: block; height: 100%; border-radius: 999px; }
 
+  /* analytics */
+  .evo-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .evo-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .evo-legend i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .evo-chart { width: 100%; height: auto; display: block; }
+  .evo-empty { display: flex; flex-direction: column; gap: 4px; }
+
   /* filters */
   .filters {
     display: flex;
@@ -984,7 +1002,8 @@
     pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>',
     back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>',
     grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>',
-    cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16l-4-4-4 4"></path><path d="M12 12v9"></path><path d="M20.4 18.4A5 5 0 0 0 18 9h-1.3A8 8 0 1 0 3 16.3"></path></svg>'
+    cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16l-4-4-4 4"></path><path d="M12 12v9"></path><path d="M20.4 18.4A5 5 0 0 0 18 9h-1.3A8 8 0 1 0 3 16.3"></path></svg>',
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>'
   };
 
   var DOWNLOAD_NAME = "kanban-diretoria-operacoes.html";
@@ -1002,7 +1021,7 @@
   var saving = false;
   var publishing = false;
   var ui = {
-    view: "cover",  // 'cover' = contract menu, 'board' = the kanban columns
+    view: "cover",  // 'cover' = contract menu, 'board' = the kanban columns, 'analytics' = the stats/evolution panel
     filter: null,   // null = all contracts
     modal: null,    // {type:'add'} | {type:'detail', cardId} | {type:'view-evidence', cardId, evId}
     confirmDeleteCard: null
@@ -1041,6 +1060,22 @@
     try {
       return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
     } catch (e) { return ""; }
+  }
+  // history entries are keyed by plain "YYYY-MM-DD" day strings (no time).
+  // Date-only ISO text parses as UTC midnight, so feeding it through
+  // toLocaleDateString in a negative-offset timezone (like pt-BR's) rolls
+  // it back a day; build the Date from local y/m/d parts instead.
+  function parseDayKey(key) {
+    var p = String(key).split("-");
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+  function fmtDayKey(key) {
+    try { return parseDayKey(key).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }); }
+    catch (e) { return key; }
+  }
+  function fmtDayKeyShort(key) {
+    try { return parseDayKey(key).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }); }
+    catch (e) { return key; }
   }
   function fmtSize(bytes) {
     if (!bytes && bytes !== 0) return "";
@@ -1092,9 +1127,10 @@
     try { seed = JSON.parse(seedEl.textContent); } catch (e) { seed = null; }
     if (seed && seed.cards) {
       if (!seed.buildId) seed.buildId = newBuildId();
+      if (!seed.history) seed.history = [];  // older boards were saved before history existed
       return seed;
     }
-    return { buildId: newBuildId(), cards: [], updatedAt: new Date().toISOString() };
+    return { buildId: newBuildId(), cards: [], history: [], updatedAt: new Date().toISOString() };
   }
 
   function getAppSource() {
@@ -1157,6 +1193,7 @@
       if (raw) {
         var stored = JSON.parse(raw);
         if (stored && stored.cards && stored.buildId && stored.buildId === seed.buildId) {
+          if (!stored.history) stored.history = [];
           return stored;
         }
       }
@@ -1408,8 +1445,46 @@
     } catch (e) { /* ignore */ }
   }
 
+  // Keeps a lightweight daily trail of where the board stood, so the
+  // Análises view can chart progress over time. One entry per calendar day:
+  // further changes on the same day overwrite that day's entry rather than
+  // piling up, so the log stays small no matter how many edits happen.
+  function dayKey(d) {
+    return d.toISOString().slice(0, 10);
+  }
+
+  function recordHistorySnapshot() {
+    if (!STATE.history) STATE.history = [];
+    var today = dayKey(new Date());
+    var byCompany = {};
+    COMPANIES.forEach(function (c) { byCompany[c.id] = { total: 0, done: 0 }; });
+    var todo = 0, doing = 0, done = 0;
+    STATE.cards.forEach(function (c) {
+      if (c.status === "todo") todo++;
+      else if (c.status === "doing") doing++;
+      else if (c.status === "done") done++;
+      if (!byCompany[c.company]) byCompany[c.company] = { total: 0, done: 0 };
+      byCompany[c.company].total++;
+      if (c.status === "done") byCompany[c.company].done++;
+    });
+    var entry = { date: today, total: STATE.cards.length, todo: todo, doing: doing, done: done, byCompany: byCompany };
+    var last = STATE.history.length ? STATE.history[STATE.history.length - 1] : null;
+    if (last && last.date === today) {
+      STATE.history[STATE.history.length - 1] = entry;
+    } else {
+      STATE.history.push(entry);
+    }
+    // Cap the trail so the file doesn't grow forever — about a year of
+    // daily points is more than enough for a progress chart.
+    var MAX_HISTORY = 366;
+    if (STATE.history.length > MAX_HISTORY) {
+      STATE.history.splice(0, STATE.history.length - MAX_HISTORY);
+    }
+  }
+
   async function persist() {
     STATE.updatedAt = new Date().toISOString();
+    recordHistorySnapshot();
     if (MODE === "local") {
       saveLocal();
       return;
@@ -1604,7 +1679,9 @@
     app.innerHTML =
       renderTopbar(stats) +
       '<div class="app-shell" style="padding-top:0">' +
-      (ui.view === "cover" ? renderCover(stats) : renderBoardView(computeStats(ui.filter))) +
+      (ui.view === "cover" ? renderCover(stats) :
+       ui.view === "analytics" ? renderAnalyticsView(stats) :
+       renderBoardView(computeStats(ui.filter))) +
       "</div>" +
       renderModal() +
       '<div class="toast-wrap" id="toast-wrap"></div>';
@@ -1625,6 +1702,7 @@
       (READONLY ? '<span class="badge-readonly">Somente leitura</span>' : "") +
       (MODE === "local" ? '<span class="badge-local" title="Esta é a cópia baixada: as alterações ficam salvas neste navegador. Baixe o HTML para levar o quadro para outro computador.">Cópia local</span>' : "") +
       '<span class="updated-at">Atualizado em ' + escapeHtml(fmtDate(STATE.updatedAt)) + "</span>" +
+      '<button class="btn' + (ui.view === "analytics" ? " btn-primary" : "") + '" data-action="go-analytics" title="Estatísticas e evolução do quadro">' + ICONS.chart + " Análises</button>" +
       (canPublishOnline()
         ? '<button class="btn btn-publish" data-action="publish-online"' + (publishing ? " disabled" : "") +
           ' title="Grava o quadro atual no site, para todo mundo ver a mesma versão">' +
@@ -1733,6 +1811,91 @@
       '<div class="stat-tile stat-done"><div class="label">Concluído — ' + stats.pct + '%</div><div class="value tabular">' + stats.byStatus.done + "</div>" +
       '<div class="stat-progress"><span style="width:' + stats.pct + '%"></span></div>' +
       "</div>" +
+      "</div>"
+    );
+  }
+
+  // ---------- analytics ----------
+
+  function renderAnalyticsView(stats) {
+    var head =
+      '<div class="board-head">' +
+      '<button class="btn btn-ghost back-btn" data-action="go-cover">' + ICONS.back + " Contratos</button>" +
+      '<span class="board-title"><span class="bt-text"><b>Análises</b><span>Estados e evolução do quadro</span></span></span>' +
+      "</div>";
+    return head + renderStats(stats) + renderCompanyBreakdown(stats) + renderEvolutionChart(STATE.history || []);
+  }
+
+  function renderCompanyBreakdown(stats) {
+    var rows = COMPANIES.map(function (c) {
+      var todo = 0, doing = 0, done = 0;
+      STATE.cards.forEach(function (card) {
+        if (card.company !== c.id) return;
+        if (card.status === "todo") todo++;
+        else if (card.status === "doing") doing++;
+        else if (card.status === "done") done++;
+      });
+      var total = todo + doing + done;
+      var pct = total ? Math.round((done / total) * 100) : 0;
+      var todoW = total ? (todo / total) * 100 : 0;
+      var doingW = total ? (doing / total) * 100 : 0;
+      var doneW = total ? (done / total) * 100 : 0;
+      return (
+        '<div class="cp-row">' +
+        '<div class="cp-row-top"><span class="tag"><span class="dot" style="display:inline-block;width:7px;height:7px;border-radius:999px;background:' + c.color + ';margin-right:5px"></span><b>' + escapeHtml(c.label) + "</b></span>" +
+        '<span class="count tabular">' + done + "/" + total + " · " + pct + "%</span></div>" +
+        '<div class="cp-bar">' +
+        (todoW ? '<span style="width:' + todoW + '%;background:var(--status-todo);float:left"></span>' : "") +
+        (doingW ? '<span style="width:' + doingW + '%;background:var(--status-doing);float:left"></span>' : "") +
+        (doneW ? '<span style="width:' + doneW + '%;background:var(--status-done);float:left"></span>' : "") +
+        "</div>" +
+        "</div>"
+      );
+    }).join("");
+    return (
+      '<div class="company-progress">' +
+      '<div class="cp-title">Por contrato</div>' +
+      '<div class="cp-grid">' + rows + "</div>" +
+      "</div>"
+    );
+  }
+
+  function renderEvolutionChart(history) {
+    if (!history || history.length < 2) {
+      return (
+        '<div class="company-progress evo-empty">' +
+        '<div class="cp-title">Evolução</div>' +
+        '<p style="margin:0;color:var(--text-muted);font-size:12.5px">Ainda não há histórico suficiente. Cada alteração feita no quadro registra um ponto aqui — volte depois de alguns dias de uso para ver a evolução.</p>' +
+        "</div>"
+      );
+    }
+    var w = 720, h = 220, padL = 34, padR = 12, padT = 14, padB = 24;
+    var innerW = w - padL - padR, innerH = h - padT - padB;
+    var maxTotal = history.reduce(function (m, e) { return Math.max(m, e.total); }, 0) || 1;
+    var n = history.length;
+    var x = function (i) { return padL + (n === 1 ? 0 : (i / (n - 1)) * innerW); };
+    var y = function (v) { return padT + innerH - (v / maxTotal) * innerH; };
+    var totalPts = history.map(function (e, i) { return x(i) + "," + y(e.total); }).join(" ");
+    var donePts = history.map(function (e, i) { return x(i) + "," + y(e.done); }).join(" ");
+    var step = Math.max(1, Math.ceil(n / 6));
+    var labels = history.map(function (e, i) {
+      if (i !== 0 && i !== n - 1 && i % step !== 0) return "";
+      return '<text x="' + x(i) + '" y="' + (h - 6) + '" text-anchor="middle" font-size="9.5" fill="var(--text-faint)">' + escapeHtml(fmtDayKeyShort(e.date)) + "</text>";
+    }).join("");
+    var last = history[history.length - 1];
+    return (
+      '<div class="company-progress">' +
+      '<div class="cp-title">Evolução' + (last ? " — " + escapeHtml(fmtDayKey(last.date)) + ": " + last.total + " ações, " + last.done + " concluídas" : "") + "</div>" +
+      '<div class="evo-legend">' +
+      '<span><i style="background:var(--border-strong)"></i>Total de ações</span>' +
+      '<span><i style="background:var(--status-done)"></i>Concluídas</span>' +
+      "</div>" +
+      '<svg viewBox="0 0 ' + w + " " + h + '" class="evo-chart" role="img" aria-label="Evolução do total de ações e das concluídas ao longo do tempo">' +
+      '<line x1="' + padL + '" y1="' + (padT + innerH) + '" x2="' + (w - padR) + '" y2="' + (padT + innerH) + '" stroke="var(--border)" stroke-width="1"></line>' +
+      '<polyline points="' + totalPts + '" fill="none" stroke="var(--border-strong)" stroke-width="2"></polyline>' +
+      '<polyline points="' + donePts + '" fill="none" stroke="var(--status-done)" stroke-width="2.2"></polyline>' +
+      labels +
+      "</svg>" +
       "</div>"
     );
   }
@@ -1995,6 +2158,13 @@
     if (action === "open-all") {
       ui.view = "board";
       ui.filter = null;
+      render();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "go-analytics") {
+      ui.view = "analytics";
+      ui.confirmDeleteCard = null;
       render();
       window.scrollTo(0, 0);
       return;
