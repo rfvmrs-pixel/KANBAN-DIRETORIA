@@ -1366,10 +1366,18 @@
 
   // Derived from the Pages URL itself (rafael.github.io/REPO/), so the
   // button keeps working if the repository is renamed or forked.
+  // This board also gets served from places other than its own GitHub
+  // Pages site (e.g. mirrored inside the company portal so it's reachable
+  // from networks that block github.io). "Publicar online" should work
+  // from any of those copies, always writing back to the same repo — so
+  // outside of github.io itself, fall back to this fixed target instead
+  // of trying to derive one from the hosting page's URL.
+  var FIXED_GH_TARGET = { owner: "rfvmrs-pixel", repo: "KANBAN-DIRETORIA", path: "index.html", branch: "main" };
+
   function githubTarget() {
     var host = location.hostname || "";
     var m = host.match(/^([^.]+)\.github\.io$/i);
-    if (!m) return null;
+    if (!m) return FIXED_GH_TARGET;
     var owner = m[1];
     var seg = (location.pathname || "/").split("/").filter(Boolean);
     // user/organisation site (owner.github.io) serves from the repo
