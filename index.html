@@ -512,11 +512,12 @@
   /* stats */
   .stats {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
     margin-bottom: 18px;
   }
   @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat-tile.stat-overdue .value { color: var(--status-todo); }
 
   .stat-tile {
     background: var(--surface);
@@ -743,6 +744,23 @@
     color: var(--text-muted);
     margin-top: 2px;
   }
+
+  .card-due { margin-top: 6px; }
+  .due-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .due-badge svg { width: 11px; height: 11px; }
+  .due-badge.due-ok, .due-badge.due-done { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }
+  .due-badge.due-soon { background: var(--status-doing-soft); color: var(--status-doing); }
+  .due-badge.due-overdue { background: var(--status-todo-soft); color: var(--status-todo); }
+  .card.card-alert-overdue { border-left-color: var(--status-todo); box-shadow: inset 3px 0 0 var(--status-todo); }
+  .card.card-alert-soon { border-left-color: var(--status-doing); }
 
   .card-bottom {
     display: flex;
@@ -1069,7 +1087,9 @@
     cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16l-4-4-4 4"></path><path d="M12 12v9"></path><path d="M20.4 18.4A5 5 0 0 0 18 9h-1.3A8 8 0 1 0 3 16.3"></path></svg>',
     chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
     logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>',
-    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>'
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+    key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M21 2l-9.6 9.6"></path><path d="M15.5 7.5L18 5l3 3-2.5 2.5"></path></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
   };
 
   var DOWNLOAD_NAME = "kanban-diretoria-operacoes.html";
@@ -1083,9 +1103,10 @@
   // patch the check out). Do not put anything truly sensitive behind it.
   //
   // Passwords are kept as a non-cryptographic hash (FNV-1a) so they are
-  // not sitting here in plain text. To change or add one: open this file
-  // in a browser, paste `hashPass("novaSenha")` in the dev console, and
-  // swap the resulting hex into the matching entry's `hash` below.
+  // not sitting here in plain text, and live in STATE.accessHashes (not
+  // hardcoded) so "Trocar senha" can change one and publish it like any
+  // other board edit. A group with no override yet falls back to
+  // DEFAULT_ACCESS_HASH — the shared starting password "Triunfo2026".
   function hashPass(str) {
     var h = 0x811c9dc5;
     for (var i = 0; i < str.length; i++) {
@@ -1095,17 +1116,23 @@
     return h.toString(16);
   }
   var ACCESS_LS_KEY = "kanban-diretoria-access-v1";
+  var DEFAULT_ACCESS_HASH = "accb3a48";  // hashPass("Triunfo2026")
   var ACCESS_GROUPS = [
-    { id: "admin", label: "Diretoria — acesso total", companies: "ALL", hash: "b23269fc" },
-    { id: "arm", label: "ARM Rio", companies: ["arm"], hash: "9f774684" },
-    { id: "allseas", label: "All Seas", companies: ["allseas"], hash: "fae1e9b1" },
-    { id: "especialistas", label: "Especialistas", companies: ["especialistas"], hash: "c3ca0778" },
-    { id: "equinor-spot", label: "Equinor / SPOT", companies: ["equinor", "spot"], hash: "48b5b274" },
-    { id: "tps-prime", label: "TPS / Prime", companies: ["tps", "prime"], hash: "635ad810" }
+    { id: "admin", label: "Diretoria", companies: "ALL" },
+    { id: "superintendencia", label: "Superintendência", companies: "ALL" },
+    { id: "arm", label: "ARM Rio", companies: ["arm"] },
+    { id: "allseas-equinor-spot", label: "All Seas / Equinor / SPOT", companies: ["allseas", "equinor", "spot"] },
+    { id: "especialistas", label: "Especialistas", companies: ["especialistas"] },
+    { id: "tps-prime", label: "TPS / Prime", companies: ["tps", "prime"] }
   ];
   var ACCESS = null;  // null until login; otherwise one of the ACCESS_GROUPS entries
   var loginError = "";
+  var loginSelected = ACCESS_GROUPS[0].id;
+  var changePassError = "";
 
+  function groupHash(groupId) {
+    return (STATE && STATE.accessHashes && STATE.accessHashes[groupId]) || DEFAULT_ACCESS_HASH;
+  }
   function restoreAccess() {
     try {
       var id = localStorage.getItem(ACCESS_LS_KEY);
@@ -1196,6 +1223,36 @@
     try { return parseDayKey(key).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }); }
     catch (e) { return key; }
   }
+
+  // Days between today and a "YYYY-MM-DD" due date, both taken at local
+  // midnight so a due date of "today" reads as 0, not a fraction of a day.
+  function daysUntilDue(dueKey) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var due = parseDayKey(dueKey);
+    due.setHours(0, 0, 0, 0);
+    return Math.round((due - today) / 86400000);
+  }
+
+  function dueStatus(c) {
+    if (!c.due) return null;
+    if (c.status === "done") return { level: "done", days: null };
+    var days = daysUntilDue(c.due);
+    if (days < 0) return { level: "overdue", days: days };
+    if (days <= 3) return { level: "soon", days: days };
+    return { level: "ok", days: days };
+  }
+
+  function dueBadgeHtml(c) {
+    var s = dueStatus(c);
+    if (!s) return "";
+    var label =
+      s.level === "done" ? "Prazo " + fmtDayKeyShort(c.due) :
+      s.level === "overdue" ? ICONS.alert + " Atrasada " + Math.abs(s.days) + (Math.abs(s.days) === 1 ? " dia" : " dias") :
+      s.level === "soon" ? ICONS.alert + (s.days === 0 ? " Vence hoje" : s.days === 1 ? " Vence amanhã" : " Vence em " + s.days + " dias") :
+      "Prazo " + fmtDayKeyShort(c.due);
+    return '<span class="due-badge due-' + s.level + '">' + label + "</span>";
+  }
   function fmtSize(bytes) {
     if (!bytes && bytes !== 0) return "";
     if (bytes < 1024) return bytes + " B";
@@ -1247,9 +1304,10 @@
     if (seed && seed.cards) {
       if (!seed.buildId) seed.buildId = newBuildId();
       if (!seed.history) seed.history = [];  // older boards were saved before history existed
+      if (!seed.accessHashes) seed.accessHashes = {};  // per-group password overrides
       return seed;
     }
-    return { buildId: newBuildId(), cards: [], history: [], updatedAt: new Date().toISOString() };
+    return { buildId: newBuildId(), cards: [], history: [], accessHashes: {}, updatedAt: new Date().toISOString() };
   }
 
   function getAppSource() {
@@ -1313,6 +1371,7 @@
         var stored = JSON.parse(raw);
         if (stored && stored.cards && stored.buildId && stored.buildId === seed.buildId) {
           if (!stored.history) stored.history = [];
+          if (!stored.accessHashes) stored.accessHashes = {};
           return stored;
         }
       }
@@ -1659,6 +1718,7 @@
       company: data.company,
       text: data.text.trim(),
       sub: (data.sub || "").trim(),
+      due: (data.due || "").trim() || null,  // "YYYY-MM-DD" or null
       status: data.status || "todo",
       evidence: [],
       createdAt: new Date().toISOString()
@@ -1678,12 +1738,13 @@
     persist();
   }
 
-  function updateCardText(id, text, sub) {
+  function updateCardText(id, text, sub, due) {
     var c = findCard(id);
     if (!c) return;
     if (!isCompanyAllowed(c.company)) return;
     c.text = text.trim() || c.text;
     c.sub = (sub || "").trim();
+    c.due = (due || "").trim() || null;
     render();
     persist();
     toast("Ação atualizada.");
@@ -1790,6 +1851,7 @@
   // cover menu needs every contract's numbers at once.
   function computeStats(filterId) {
     var total = 0;
+    var overdue = 0;
     var byStatus = { todo: 0, doing: 0, done: 0 };
     var byCompany = {};
     COMPANIES.forEach(function (c) { byCompany[c.id] = { total: 0, done: 0 }; });
@@ -1801,9 +1863,11 @@
       if (filterId && c.company !== filterId) return;
       total++;
       if (byStatus[c.status] !== undefined) byStatus[c.status]++;
+      var ds = dueStatus(c);
+      if (ds && ds.level === "overdue") overdue++;
     });
     var pct = total ? Math.round((byStatus.done / total) * 100) : 0;
-    return { total: total, byStatus: byStatus, byCompany: byCompany, pct: pct };
+    return { total: total, byStatus: byStatus, byCompany: byCompany, pct: pct, overdue: overdue };
   }
 
   // ---------- render ----------
@@ -1828,15 +1892,19 @@
   }
 
   function renderLogin() {
+    var options = ACCESS_GROUPS.map(function (g) {
+      return '<option value="' + g.id + '"' + (g.id === loginSelected ? " selected" : "") + ">" + escapeHtml(g.label) + "</option>";
+    }).join("");
     return (
       '<div class="login-screen">' +
       '<div class="login-card">' +
       '<img src="' + LOGO_DATA_URI + '" alt="Triunfo Logística" />' +
       "<h2>KANBAN Diretoria de Operações</h2>" +
-      '<p class="lead">Digite a senha do seu contrato para abrir o quadro.</p>' +
+      '<p class="lead">Escolha o contrato e digite a senha para abrir o quadro.</p>' +
       (loginError ? '<div class="login-error">' + escapeHtml(loginError) + "</div>" : "") +
       '<form id="login-form">' +
-      '<div class="field"><input id="login-pass" type="password" placeholder="Senha de acesso" autofocus autocomplete="off" /></div>' +
+      '<div class="field"><label for="login-group">Contrato</label><select id="login-group">' + options + "</select></div>" +
+      '<div class="field"><label for="login-pass">Senha</label><input id="login-pass" type="password" placeholder="Senha de acesso" autofocus autocomplete="off" /></div>' +
       '<button type="submit" class="btn btn-primary">Entrar</button>' +
       "</form>" +
       '<p class="login-note">Não sabe a senha do seu contrato? Fale com a Diretoria de Operações.</p>' +
@@ -1867,6 +1935,7 @@
       '<button class="btn" data-action="download-html" title="Baixa este quadro como um arquivo HTML editável, com as ações e evidências atuais">' + ICONS.download + " Baixar HTML</button>" +
       '<button class="btn btn-primary" data-action="open-add"' + (READONLY ? " disabled" : "") + ">" + ICONS.plus + " Nova ação</button>" +
       '<span class="access-badge" title="Acesso logado neste navegador">' + ICONS.lock + escapeHtml(ACCESS.label) + "</span>" +
+      '<button class="btn btn-ghost btn-sm" data-action="open-change-password" title="Trocar a senha deste contrato">' + ICONS.key + " Trocar senha</button>" +
       '<button class="btn btn-ghost btn-sm" data-action="logout" title="Sair deste acesso">' + ICONS.logout + " Sair</button>" +
       "</div>" +
       "</div>" +
@@ -1971,6 +2040,7 @@
       '<div class="stat-tile stat-done"><div class="label">Concluído — ' + stats.pct + '%</div><div class="value tabular">' + stats.byStatus.done + "</div>" +
       '<div class="stat-progress"><span style="width:' + stats.pct + '%"></span></div>' +
       "</div>" +
+      (stats.overdue ? '<div class="stat-tile stat-overdue"><div class="label">' + ICONS.alert + ' Atrasadas</div><div class="value tabular">' + stats.overdue + "</div></div>" : "") +
       "</div>"
     );
   }
@@ -2128,8 +2198,10 @@
         "</button>"
       );
     }).join("");
+    var due = dueStatus(c);
+    var alertClass = due && due.level === "overdue" ? " card-alert-overdue" : due && due.level === "soon" ? " card-alert-soon" : "";
     return (
-      '<div class="card" style="--card-color:' + company.color + '">' +
+      '<div class="card' + alertClass + '" style="--card-color:' + company.color + '">' +
       '<div class="card-top">' +
       '<span class="tag" style="background:' + company.color + '">' + escapeHtml(company.label) + "</span>" +
       '<div class="card-actions">' +
@@ -2140,6 +2212,7 @@
       "</div>" +
       '<div class="card-text" data-action="open-detail" data-card="' + c.id + '">' + escapeHtml(c.text) + "</div>" +
       (c.sub ? '<div class="card-sub">' + escapeHtml(c.sub) + "</div>" : "") +
+      (due ? '<div class="card-due">' + dueBadgeHtml(c) + "</div>" : "") +
       (confirming
         ? '<div class="confirm-row">Excluir esta ação?<span class="spacer"></span><button class="btn btn-sm" data-action="cancel-delete-card">Cancelar</button><button class="btn btn-sm btn-danger" data-action="confirm-delete-card" data-card="' + c.id + '">Excluir</button></div>'
         : '<div class="card-bottom">' +
@@ -2156,7 +2229,29 @@
     if (ui.modal.type === "detail") return renderDetailModal(ui.modal.cardId);
     if (ui.modal.type === "view-evidence") return renderEvidenceViewModal(ui.modal.cardId, ui.modal.evId);
     if (ui.modal.type === "gh-token") return renderGhTokenModal();
+    if (ui.modal.type === "change-password") return renderChangePasswordModal();
     return "";
+  }
+
+  function renderChangePasswordModal() {
+    return (
+      '<div class="overlay" data-action="close-modal-backdrop">' +
+      '<div class="modal" data-stop="1">' +
+      '<div class="modal-head"><h3>Trocar senha — ' + escapeHtml(ACCESS.label) + '</h3><button class="icon-btn" data-action="close-modal">✕</button></div>' +
+      (changePassError ? '<div class="login-error">' + escapeHtml(changePassError) + "</div>" : "") +
+      '<form id="change-password-form">' +
+      '<div class="field"><label for="cp-current">Senha atual</label><input id="cp-current" type="password" autocomplete="off" /></div>' +
+      '<div class="field"><label for="cp-new">Nova senha</label><input id="cp-new" type="password" autocomplete="off" /></div>' +
+      '<div class="field"><label for="cp-confirm">Confirmar nova senha</label><input id="cp-confirm" type="password" autocomplete="off" /></div>' +
+      '<p class="modal-note">Vale só para o contrato <b>' + escapeHtml(ACCESS.label) + "</b>. Depois de trocar, clique em <b>Publicar online</b> para valer para todo mundo — sem publicar, fica só neste navegador.</p>" +
+      '<div class="modal-actions">' +
+      '<button type="button" class="btn" data-action="close-modal">Cancelar</button>' +
+      '<button type="submit" class="btn btn-primary">Trocar senha</button>' +
+      "</div>" +
+      "</form>" +
+      "</div>" +
+      "</div>"
+    );
   }
 
   function renderGhTokenModal() {
@@ -2199,6 +2294,7 @@
       '<div class="field"><label for="f-company">Empresa</label><select id="f-company" required>' + companyOptions + "</select></div>" +
       '<div class="field"><label for="f-text">Ação</label><textarea id="f-text" required placeholder="Descreva a ação..."></textarea></div>' +
       '<div class="field"><label for="f-sub">Detalhe (opcional)</label><input id="f-sub" type="text" placeholder="Observação adicional" /></div>' +
+      '<div class="field"><label for="f-due">Prazo (opcional)</label><input id="f-due" type="date" /></div>' +
       '<div class="field"><label for="f-status">Situação inicial</label><select id="f-status">' + statusOptions + "</select></div>" +
       '<div class="modal-actions"><button type="button" class="btn" data-action="close-modal">Cancelar</button><button type="submit" class="btn btn-primary">Adicionar</button></div>' +
       "</form>" +
@@ -2230,9 +2326,10 @@
       '<div class="overlay" data-action="close-modal-backdrop">' +
       '<div class="modal wide" data-stop="1">' +
       '<div class="modal-head"><h3>Detalhes da ação</h3><button class="icon-btn" data-action="close-modal">✕</button></div>' +
-      '<div class="detail-meta"><span class="tag" style="background:' + company.color + '">' + escapeHtml(company.label) + '</span><span class="updated-at">Criada em ' + escapeHtml(fmtDate(c.createdAt)) + "</span></div>" +
+      '<div class="detail-meta"><span class="tag" style="background:' + company.color + '">' + escapeHtml(company.label) + '</span><span class="updated-at">Criada em ' + escapeHtml(fmtDate(c.createdAt)) + "</span>" + dueBadgeHtml(c) + "</div>" +
       '<div class="field"><label>Ação</label><textarea id="d-text"' + (READONLY ? " disabled" : "") + ">" + escapeHtml(c.text) + "</textarea></div>" +
       '<div class="field"><label>Detalhe</label><input id="d-sub" type="text" value="' + escapeHtml(c.sub || "") + '"' + (READONLY ? " disabled" : "") + " /></div>" +
+      '<div class="field"><label>Prazo</label><input id="d-due" type="date" value="' + escapeHtml(c.due || "") + '"' + (READONLY ? " disabled" : "") + " /></div>" +
       (READONLY ? "" : '<div class="modal-actions" style="margin-top:-6px;margin-bottom:14px;justify-content:flex-start"><button class="btn btn-sm" data-action="save-detail-text" data-card="' + c.id + '">Salvar alterações</button></div>') +
       '<div class="field"><label>Situação</label><div class="detail-status-row">' + statusOpts + "</div></div>" +
       '<div class="evidence-section"><h4>Evidências (' + evidence.length + ")</h4>" + evGrid +
@@ -2353,6 +2450,12 @@
       window.scrollTo(0, 0);
       return;
     }
+    if (action === "open-change-password") {
+      changePassError = "";
+      ui.modal = { type: "change-password" };
+      render();
+      return;
+    }
     if (action === "view-evidence") {
       ui.modal = { type: "view-evidence", cardId: el.dataset.card, evId: el.dataset.evidence };
       render();
@@ -2420,7 +2523,8 @@
       var card = el.dataset.card;
       var textEl = document.getElementById("d-text");
       var subEl = document.getElementById("d-sub");
-      if (textEl) updateCardText(card, textEl.value, subEl ? subEl.value : "");
+      var dueEl = document.getElementById("d-due");
+      if (textEl) updateCardText(card, textEl.value, subEl ? subEl.value : "", dueEl ? dueEl.value : "");
       return;
     }
   });
@@ -2444,15 +2548,48 @@
   });
 
   document.addEventListener("submit", function (e) {
+    if (e.target && e.target.id === "change-password-form") {
+      e.preventDefault();
+      var curEl = document.getElementById("cp-current");
+      var newEl = document.getElementById("cp-new");
+      var confirmEl = document.getElementById("cp-confirm");
+      var cur = curEl ? curEl.value : "";
+      var next = newEl ? newEl.value : "";
+      var confirm = confirmEl ? confirmEl.value : "";
+      if (hashPass(cur) !== groupHash(ACCESS.id)) {
+        changePassError = "Senha atual incorreta.";
+        render();
+        return;
+      }
+      if (!next || next.length < 4) {
+        changePassError = "A nova senha precisa ter pelo menos 4 caracteres.";
+        render();
+        return;
+      }
+      if (next !== confirm) {
+        changePassError = "As duas senhas novas não são iguais.";
+        render();
+        return;
+      }
+      if (!STATE.accessHashes) STATE.accessHashes = {};
+      STATE.accessHashes[ACCESS.id] = hashPass(next);
+      ui.modal = null;
+      render();
+      persist();
+      toast("Senha trocada. Clique em \"Publicar online\" para valer para todo mundo.");
+      return;
+    }
     if (e.target && e.target.id === "login-form") {
       e.preventDefault();
+      var groupSel = document.getElementById("login-group");
+      var selectedId = groupSel ? groupSel.value : ACCESS_GROUPS[0].id;
+      loginSelected = selectedId;
       var input = document.getElementById("login-pass");
       var pass = input ? input.value : "";
       if (!pass) return;
-      var hash = hashPass(pass);
-      var group = ACCESS_GROUPS.find(function (g) { return g.hash === hash; });
-      if (!group) {
-        loginError = "Senha inválida. Confira com a Diretoria de Operações.";
+      var group = ACCESS_GROUPS.find(function (g) { return g.id === selectedId; });
+      if (!group || hashPass(pass) !== groupHash(group.id)) {
+        loginError = "Senha inválida para esse contrato. Confira com a Diretoria de Operações.";
         render();
         return;
       }
@@ -2473,9 +2610,10 @@
       var company = document.getElementById("f-company").value;
       var text = document.getElementById("f-text").value;
       var sub = document.getElementById("f-sub").value;
+      var due = document.getElementById("f-due").value;
       var status = document.getElementById("f-status").value;
       if (!text.trim()) return;
-      addCard({ company: company, text: text, sub: sub, status: status });
+      addCard({ company: company, text: text, sub: sub, due: due, status: status });
       toast("Ação adicionada.");
     }
   });
