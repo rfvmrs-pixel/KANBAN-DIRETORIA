@@ -763,9 +763,18 @@
     color: var(--text-muted);
     margin-top: 2px;
   }
+  .card-responsavel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .card-responsavel svg { width: 11px; height: 11px; flex: none; }
 
-  .card-due { margin-top: 6px; }
-  .due-badge {
+  .card-due { margin-top: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .due-badge, .open-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -774,10 +783,11 @@
     padding: 3px 8px;
     border-radius: 999px;
   }
-  .due-badge svg { width: 11px; height: 11px; }
+  .due-badge svg, .open-badge svg { width: 11px; height: 11px; }
   .due-badge.due-ok, .due-badge.due-done { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }
   .due-badge.due-soon { background: var(--status-doing-soft); color: var(--status-doing); }
   .due-badge.due-overdue { background: var(--status-todo-soft); color: var(--status-todo); }
+  .open-badge { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }
   .card.card-alert-overdue { border-left-color: var(--status-todo); box-shadow: inset 3px 0 0 var(--status-todo); }
   .card.card-alert-soon { border-left-color: var(--status-doing); }
 
@@ -1016,6 +1026,42 @@
   .upload-label:hover { border-color: var(--accent); color: var(--accent-ink); }
   .upload-label input { display: none; }
 
+  .save-bar {
+    position: fixed;
+    bottom: 74px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--status-doing-soft);
+    color: var(--status-doing);
+    border: 1px solid var(--status-doing);
+    box-shadow: var(--shadow-md);
+    border-radius: 999px;
+    padding: 8px 10px 8px 16px;
+    animation: toast-in 0.18s ease;
+  }
+  .save-bar-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .save-bar-text svg { width: 14px; height: 14px; flex: none; }
+  .save-bar .btn-primary {
+    background: var(--status-doing);
+    border-color: var(--status-doing);
+    color: #fff9f2;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .save-bar { left: 12px; right: 12px; transform: none; flex-wrap: wrap; justify-content: center; }
+  }
+
   .toast-wrap {
     position: fixed;
     bottom: 18px;
@@ -1041,6 +1087,13 @@
 
   .empty-board { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 
+  /* usuários (cadastro para notificações) */
+  .users-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .users-table th, .users-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .users-table th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.4px; }
+  .users-table tr:last-child td { border-bottom: none; }
+  .users-actions { display: flex; gap: 6px; justify-content: flex-end; white-space: nowrap; }
+
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
@@ -1048,14 +1101,13 @@
 </head>
 <body>
 <div id="app"></div>
-<script id="board-data" type="application/json">{"buildId":"bmtbu45424xjfo56x","cards":[{"id":"cmtbm4m28mo8p55","company":"superintendencia","text":"Teste","sub":"","due":"2026-08-31","status":"done","evidence":[],"createdAt":"2026-08-27T14:23:12.560Z"},{"id":"c1a033e198192vz5g6","company":"arm","text":"D+1 Incidente de Alto Potencial","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e1981988ruzw","company":"arm","text":"Romeu?","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819r5iijp","company":"arm","text":"Faturamento","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198195xzadn","company":"arm","text":"Foco do Diretor (SUB)","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819u9uxji","company":"allseas","text":"Atualizar Ranking de ACS","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819d2k1yy","company":"allseas","text":"Faturamento (Medição)","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819yslw8t","company":"tps","text":"Projeto das máquinas na Alameda","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819n6udh8","company":"tps","text":"Asfalto no Pátio","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819t3kd4j","company":"tps","text":"Body Guard","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819zqlkts","company":"tps","text":"Apresentação Semanal KPI","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819djwhhk","company":"tps","text":"Limpeza Caixa/Canaletas","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819i8cp0l","company":"tps","text":"Chapas","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e1981911dlnn","company":"equinor","text":"Avaliação dos Indicadores","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819dfvaz7","company":"equinor","text":"Análise do Faturamento","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819r2fagh","company":"especialistas","text":"Realongo","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198190l4yd6","company":"especialistas","text":"Curso Operador","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819oqql6i","company":"especialistas","text":"Publicar IN","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819gec5um","company":"spot","text":"Análise do Faturamento","sub":"Áreas ocupadas","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819nao0mh","company":"prime","text":"Rampa RP II","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198198s4ckk","company":"prime","text":"Obras RP II e Garupá","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"}],"updatedAt":"2026-08-27T17:39:12.485Z","history":[{"date":"2026-08-24","total":20,"todo":20,"doing":0,"done":0,"byCompany":{"arm":{"total":4,"done":0},"allseas":{"total":2,"done":0},"tps":{"total":6,"done":0},"equinor":{"total":2,"done":0},"especialistas":{"total":3,"done":0},"spot":{"total":1,"done":0},"prime":{"total":2,"done":0},"diretoria":{"total":0,"done":0},"superintendencia":{"total":0,"done":0}}},{"date":"2026-08-26","total":20,"todo":20,"doing":0,"done":0,"byCompany":{"arm":{"total":4,"done":0},"allseas":{"total":2,"done":0},"tps":{"total":6,"done":0},"equinor":{"total":2,"done":0},"especialistas":{"total":3,"done":0},"spot":{"total":1,"done":0},"prime":{"total":2,"done":0},"diretoria":{"total":0,"done":0},"superintendencia":{"total":0,"done":0}}},{"date":"2026-08-27","total":21,"todo":20,"doing":0,"done":1,"byCompany":{"arm":{"total":4,"done":0},"allseas":{"total":2,"done":0},"tps":{"total":6,"done":0},"equinor":{"total":2,"done":0},"especialistas":{"total":3,"done":0},"spot":{"total":1,"done":0},"prime":{"total":2,"done":0},"diretoria":{"total":0,"done":0},"superintendencia":{"total":1,"done":1}}}],"accessHashes":{}}</script>
+<script id="board-data" type="application/json">{"buildId":"b1a033e19819f8a0oqga","cards":[{"id":"c1a033e198192vz5g6","company":"arm","text":"D+1 Incidente de Alto Potencial","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e1981988ruzw","company":"arm","text":"Romeu?","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819r5iijp","company":"arm","text":"Faturamento","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198195xzadn","company":"arm","text":"Foco do Diretor (SUB)","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819u9uxji","company":"allseas","text":"Atualizar Ranking de ACS","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819d2k1yy","company":"allseas","text":"Faturamento (Medição)","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819yslw8t","company":"tps","text":"Projeto das máquinas na Alameda","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819n6udh8","company":"tps","text":"Asfalto no Pátio","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819t3kd4j","company":"tps","text":"Body Guard","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819zqlkts","company":"tps","text":"Apresentação Semanal KPI","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819djwhhk","company":"tps","text":"Limpeza Caixa/Canaletas","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819i8cp0l","company":"tps","text":"Chapas","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e1981911dlnn","company":"equinor","text":"Avaliação dos Indicadores","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819dfvaz7","company":"equinor","text":"Análise do Faturamento","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819r2fagh","company":"especialistas","text":"Realongo","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198190l4yd6","company":"especialistas","text":"Curso Operador","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819oqql6i","company":"especialistas","text":"Publicar IN","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819gec5um","company":"spot","text":"Análise do Faturamento","sub":"Áreas ocupadas","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e19819nao0mh","company":"prime","text":"Rampa RP II","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"c1a033e198198s4ckk","company":"prime","text":"Obras RP II e Garupá","sub":"","status":"todo","evidence":[],"createdAt":"2026-08-24T12:00:00.000Z"},{"id":"test-alert-1787593885","company":"superintendencia","text":"TESTE — alerta de prazo por e-mail","sub":"Card criado via terminal para testar o envio automático","due":"2026-08-24","status":"todo","evidence":[],"createdAt":"2026-08-24T17:51:25.576Z"}],"updatedAt":"2026-08-24T17:51:25.583Z"}</script>
 <script id="app-src">
-
 (function () {
   "use strict";
 
   var LOGO_DATA_URI = "data:image/webp;base64,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";
-  var HEAD_STATIC = "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>KANBAN Diretoria de Operações</title>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n<style>\n  :root {\n    --bg: #f1efe9;\n    --surface: #ffffff;\n    --surface-raised: #fbfaf6;\n    --surface-sunk: #e9e5db;\n    --border: #ded7c8;\n    --border-strong: #c9c0ac;\n    --text: #211c14;\n    --text-muted: #756a58;\n    --text-faint: #a49a86;\n    --accent: #b8500f;\n    --accent-ink: #7a3608;\n    --accent-soft: #f3e0cd;\n    --focus: #2f6f6b;\n\n    --status-todo: #a63c3c;\n    --status-todo-soft: #f6dede;\n    --status-doing: #a97a12;\n    --status-doing-soft: #f3e6c6;\n    --status-done: #2f7a4f;\n    --status-done-soft: #dcecdf;\n\n    --shadow-sm: 0 1px 2px rgba(33, 28, 20, 0.08);\n    --shadow-md: 0 8px 24px rgba(33, 28, 20, 0.16);\n    --radius: 10px;\n  }\n\n  @media (prefers-color-scheme: dark) {\n    :root:not([data-theme=\"light\"]) {\n      --bg: #15130f;\n      --surface: #1d1a14;\n      --surface-raised: #242019;\n      --surface-sunk: #110f0b;\n      --border: #38321f;\n      --border-strong: #4d452c;\n      --text: #f2ede1;\n      --text-muted: #b3a68c;\n      --text-faint: #7d735d;\n      --accent: #e2822f;\n      --accent-ink: #ffbe80;\n      --accent-soft: #3a2612;\n      --focus: #5fb3ac;\n\n      --status-todo: #e07070;\n      --status-todo-soft: #3a2020;\n      --status-doing: #dcab48;\n      --status-doing-soft: #3a2f14;\n      --status-done: #6ac48c;\n      --status-done-soft: #17301f;\n\n      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);\n      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);\n    }\n  }\n\n  :root[data-theme=\"dark\"] {\n    --bg: #15130f;\n    --surface: #1d1a14;\n    --surface-raised: #242019;\n    --surface-sunk: #110f0b;\n    --border: #38321f;\n    --border-strong: #4d452c;\n    --text: #f2ede1;\n    --text-muted: #b3a68c;\n    --text-faint: #7d735d;\n    --accent: #e2822f;\n    --accent-ink: #ffbe80;\n    --accent-soft: #3a2612;\n    --focus: #5fb3ac;\n\n    --status-todo: #e07070;\n    --status-todo-soft: #3a2020;\n    --status-doing: #dcab48;\n    --status-doing-soft: #3a2f14;\n    --status-done: #6ac48c;\n    --status-done-soft: #17301f;\n\n    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);\n    --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);\n  }\n\n  * { box-sizing: border-box; }\n\n  svg { width: 14px; height: 14px; flex: none; display: inline-block; vertical-align: middle; }\n\n  html, body {\n    background: var(--bg);\n    color: var(--text);\n  }\n\n  body {\n    margin: 0;\n    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;\n    font-size: 14px;\n    line-height: 1.45;\n    -webkit-font-smoothing: antialiased;\n  }\n\n  h1, h2, h3 { font-family: 'Manrope', 'Inter', sans-serif; text-wrap: balance; margin: 0; }\n\n  .tabular { font-variant-numeric: tabular-nums; }\n\n  button { font-family: inherit; cursor: pointer; }\n  input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }\n\n  a { color: var(--accent-ink); }\n\n  :focus-visible {\n    outline: 2px solid var(--focus);\n    outline-offset: 2px;\n  }\n\n  .app-shell {\n    max-width: 1400px;\n    margin: 0 auto;\n    padding: 20px 24px 64px;\n  }\n\n  /* header */\n  .topbar {\n    display: flex;\n    align-items: center;\n    gap: 18px;\n    flex-wrap: wrap;\n    padding-bottom: 18px;\n    border-bottom: 1px solid var(--border);\n    margin-bottom: 20px;\n  }\n  .brand {\n    display: flex;\n    align-items: center;\n    gap: 14px;\n    border: none;\n    background: none;\n    padding: 4px 6px 4px 0;\n    margin: 0;\n    border-radius: 8px;\n    text-align: left;\n    color: inherit;\n  }\n  .brand:hover { background: var(--surface-sunk); }\n  .brand img {\n    height: 46px;\n    width: auto;\n    display: block;\n    box-sizing: border-box;\n    background: #fff;\n    border-radius: 8px;\n    padding: 4px 7px;\n  }\n\n  .brand-divider {\n    width: 1px;\n    height: 38px;\n    background: var(--border-strong);\n    display: block;\n    flex: none;\n  }\n  .brand-title { display: flex; flex-direction: column; }\n  .brand-name {\n    font-family: 'Manrope', 'Inter', sans-serif;\n    font-size: 22px;\n    font-weight: 800;\n    letter-spacing: 0.3px;\n    color: var(--text);\n    line-height: 1.15;\n  }\n  .brand-title .subtitle {\n    font-size: 12.5px;\n    color: var(--text-muted);\n    font-weight: 600;\n    text-transform: uppercase;\n    letter-spacing: 0.6px;\n    margin-top: 2px;\n  }\n\n  .topbar-meta {\n    margin-left: auto;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    flex-wrap: wrap;\n  }\n  .updated-at {\n    font-size: 12px;\n    color: var(--text-faint);\n  }\n  .badge-readonly {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    background: var(--status-todo-soft);\n    color: var(--status-todo);\n    padding: 4px 10px;\n    border-radius: 999px;\n  }\n  .badge-local {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    background: var(--accent-soft);\n    color: var(--accent-ink);\n    padding: 4px 10px;\n    border-radius: 999px;\n    cursor: help;\n  }\n  .access-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11.5px;\n    font-weight: 700;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    padding: 4px 10px;\n    border-radius: 999px;\n  }\n  .access-badge svg { width: 11px; height: 11px; }\n\n  /* login gate */\n  .login-screen {\n    min-height: 100vh;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 24px;\n  }\n  .login-card {\n    width: 100%;\n    max-width: 380px;\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: 14px;\n    box-shadow: var(--shadow-md);\n    padding: 28px 26px;\n    text-align: center;\n  }\n  .login-card img {\n    height: 108px;\n    margin-bottom: 18px;\n    box-sizing: border-box;\n    background: #fff;\n    border-radius: 14px;\n    padding: 12px 18px;\n  }\n  .login-card h2 { font-size: 19px; margin-bottom: 4px; }\n  .login-card p.lead { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }\n  .login-card .field { text-align: left; }\n  .login-card input[type=\"password\"] {\n    width: 100%;\n    border: 1px solid var(--border-strong);\n    background: var(--surface-raised);\n    color: var(--text);\n    border-radius: 8px;\n    padding: 11px 12px;\n    font-size: 14px;\n    letter-spacing: 1px;\n  }\n  .login-error {\n    font-size: 12.5px;\n    color: var(--status-todo);\n    background: var(--status-todo-soft);\n    border-radius: 8px;\n    padding: 8px 10px;\n    margin-bottom: 12px;\n  }\n  .login-card .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }\n  .login-note {\n    margin-top: 18px;\n    font-size: 11px;\n    color: var(--text-faint);\n    line-height: 1.5;\n  }\n\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border-radius: 8px;\n    border: 1px solid var(--border-strong);\n    background: var(--surface);\n    color: var(--text);\n    padding: 9px 14px;\n    font-size: 13px;\n    font-weight: 600;\n    transition: background 0.12s ease, border-color 0.12s ease, transform 0.05s ease;\n  }\n  .btn:hover { border-color: var(--accent); }\n  .btn:active { transform: translateY(1px); }\n  .btn-primary {\n    background: var(--accent);\n    border-color: var(--accent);\n    color: #fff9f2;\n  }\n  .btn-primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }\n  .btn-ghost {\n    border-color: transparent;\n    background: transparent;\n  }\n  .btn-ghost:hover { background: var(--surface-sunk); border-color: transparent; }\n  .btn-danger { color: var(--status-todo); border-color: var(--status-todo-soft); }\n  .btn-danger:hover { background: var(--status-todo-soft); border-color: var(--status-todo); }\n  .btn:disabled { opacity: 0.5; cursor: not-allowed; }\n  .btn-sm { padding: 5px 9px; font-size: 12px; border-radius: 6px; }\n  .icon { width: 14px; height: 14px; flex: none; }\n\n  /* cover — the contract menu */\n  .cover { padding-top: 4px; }\n\n  .cover-alert {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    background: var(--status-todo-soft);\n    color: var(--status-todo);\n    border: 1px solid var(--status-todo);\n    border-radius: 10px;\n    padding: 11px 16px;\n    font-size: 13px;\n    font-weight: 600;\n    margin-bottom: 16px;\n  }\n  .cover-alert svg { width: 16px; height: 16px; flex: none; }\n  .cover-alert b { font-weight: 800; }\n\n  .cover-hero {\n    display: flex;\n    align-items: flex-end;\n    justify-content: space-between;\n    gap: 24px;\n    flex-wrap: wrap;\n    padding: 4px 2px 22px;\n    border-bottom: 1px solid var(--border);\n    margin-bottom: 22px;\n  }\n  .cover-hero-text .eyebrow {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 1.1px;\n    color: var(--accent-ink);\n  }\n  .cover-hero-text h2 {\n    font-size: 34px;\n    font-weight: 800;\n    letter-spacing: -0.4px;\n    margin: 6px 0 4px;\n  }\n  .cover-hero-text p {\n    margin: 0;\n    font-size: 13.5px;\n    color: var(--text-muted);\n    max-width: 46ch;\n  }\n  .cover-hero-stats {\n    display: flex;\n    align-items: center;\n    gap: 22px;\n    flex-wrap: wrap;\n  }\n  .hero-stat { display: flex; flex-direction: column; gap: 1px; }\n  .hero-stat .hs-value {\n    font-family: 'Manrope', sans-serif;\n    font-size: 25px;\n    font-weight: 800;\n    line-height: 1;\n  }\n  .hero-stat .hs-label {\n    font-size: 10.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n  }\n  .hero-ring { width: 74px; height: 74px; }\n  .hero-ring .ring { width: 100%; height: 100%; }\n\n  .contract-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 14px;\n  }\n\n  .contract-card {\n    display: flex;\n    flex-direction: column;\n    align-items: stretch;\n    gap: 10px;\n    text-align: left;\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-top: 4px solid var(--card-color, var(--border-strong));\n    border-radius: 12px;\n    padding: 14px;\n    box-shadow: var(--shadow-sm);\n    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;\n    color: inherit;\n  }\n  .contract-card:hover {\n    transform: translateY(-2px);\n    box-shadow: var(--shadow-md);\n  }\n\n  .contract-plate {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: #ffffff;\n    border: 1px solid var(--border);\n    border-radius: 8px;\n    height: 62px;\n    padding: 9px 12px;\n  }\n  .contract-plate img,\n  .contract-plate svg {\n    max-width: 100%;\n    max-height: 100%;\n    width: auto;\n    height: auto;\n    object-fit: contain;\n    display: block;\n  }\n  .contract-plate.sm { height: 40px; width: 116px; padding: 5px 8px; flex: none; }\n  .mark-fallback { font-weight: 800; color: #17181A; font-size: 18px; }\n\n  .contract-id { display: flex; flex-direction: column; gap: 1px; }\n  .contract-name {\n    font-family: 'Manrope', sans-serif;\n    font-size: 17px;\n    font-weight: 800;\n    color: var(--text);\n    line-height: 1.15;\n  }\n  .contract-client {\n    font-size: 11.5px;\n    color: var(--text-muted);\n    font-weight: 600;\n  }\n\n  .contract-counts { display: flex; gap: 12px; }\n  .contract-counts .cc {\n    display: flex;\n    flex-direction: column;\n    font-size: 9.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-faint);\n    line-height: 1.25;\n  }\n  .contract-counts .cc b {\n    font-family: 'Manrope', sans-serif;\n    font-size: 17px;\n    font-weight: 800;\n    letter-spacing: 0;\n  }\n  .contract-counts .todo b { color: var(--status-todo); }\n  .contract-counts .doing b { color: var(--status-doing); }\n  .contract-counts .done b { color: var(--status-done); }\n\n  .contract-bar {\n    display: block;\n    height: 5px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .contract-bar > span {\n    display: block;\n    height: 100%;\n    border-radius: 999px;\n    background: var(--status-done);\n  }\n  .contract-foot {\n    display: flex;\n    justify-content: space-between;\n    font-size: 11px;\n    font-weight: 600;\n    color: var(--text-muted);\n  }\n\n  .all-contracts {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    width: 100%;\n    margin-top: 14px;\n    padding: 14px 16px;\n    border: 1.5px dashed var(--border-strong);\n    border-radius: 12px;\n    background: transparent;\n    color: var(--text-muted);\n    text-align: left;\n  }\n  .all-contracts:hover { border-color: var(--accent); color: var(--text); background: var(--surface); }\n  .all-contracts svg { width: 20px; height: 20px; }\n  .all-contracts span { display: flex; flex-direction: column; font-size: 11.5px; }\n  .all-contracts b { font-size: 14px; color: var(--text); font-family: 'Manrope', sans-serif; }\n\n  /* board header */\n  .board-head {\n    display: flex;\n    align-items: center;\n    gap: 14px;\n    flex-wrap: wrap;\n    margin-bottom: 16px;\n  }\n  .back-btn { padding-left: 8px; }\n  .board-title { display: flex; align-items: center; gap: 12px; }\n  .board-title .bt-text { display: flex; flex-direction: column; }\n  .board-title .bt-text b {\n    font-family: 'Manrope', sans-serif;\n    font-size: 19px;\n    font-weight: 800;\n    line-height: 1.15;\n  }\n  .board-title .bt-text span { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }\n\n  /* stats */\n  .stats {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));\n    gap: 12px;\n    margin-bottom: 18px;\n  }\n  @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }\n  .stat-tile.stat-overdue .value { color: var(--status-todo); }\n\n  .stat-tile {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: var(--radius);\n    padding: 14px 16px;\n    box-shadow: var(--shadow-sm);\n  }\n  .stat-tile .label {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n  }\n  .stat-tile .value {\n    font-family: 'Manrope', sans-serif;\n    font-size: 28px;\n    font-weight: 800;\n    margin-top: 4px;\n  }\n  .stat-tile.stat-todo .value { color: var(--status-todo); }\n  .stat-tile.stat-doing .value { color: var(--status-doing); }\n  .stat-tile.stat-done .value { color: var(--status-done); }\n  .stat-progress {\n    margin-top: 8px;\n    height: 6px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .stat-progress > span {\n    display: block;\n    height: 100%;\n    background: var(--status-done);\n    border-radius: 999px;\n  }\n\n  .company-progress {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: var(--radius);\n    padding: 14px 16px;\n    margin-bottom: 20px;\n    box-shadow: var(--shadow-sm);\n  }\n  .company-progress .cp-title {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n    margin-bottom: 10px;\n  }\n  .cp-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));\n    gap: 10px 18px;\n  }\n  .cp-row { font-size: 12.5px; }\n  .cp-row-top {\n    display: flex;\n    justify-content: space-between;\n    align-items: baseline;\n    margin-bottom: 4px;\n  }\n  .cp-row .tag { font-size: 10.5px; }\n  .cp-row .count { color: var(--text-muted); }\n  .cp-bar {\n    height: 5px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .cp-bar > span { display: block; height: 100%; border-radius: 999px; }\n\n  /* analytics */\n  .evo-legend {\n    display: flex;\n    gap: 16px;\n    font-size: 11.5px;\n    color: var(--text-muted);\n    margin-bottom: 8px;\n  }\n  .evo-legend span { display: inline-flex; align-items: center; gap: 6px; }\n  .evo-legend i {\n    display: inline-block;\n    width: 10px;\n    height: 10px;\n    border-radius: 3px;\n  }\n  .evo-chart { width: 100%; height: auto; display: block; }\n  .evo-empty { display: flex; flex-direction: column; gap: 4px; }\n\n  /* filters */\n  .filters {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    flex-wrap: wrap;\n    margin-bottom: 18px;\n  }\n  .filters .filters-label {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n    margin-right: 4px;\n  }\n  .chip {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border: 1px solid var(--border-strong);\n    background: var(--surface);\n    border-radius: 999px;\n    padding: 5px 12px 5px 8px;\n    font-size: 12px;\n    font-weight: 600;\n    color: var(--text-muted);\n  }\n  .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }\n  .chip.active { color: var(--text); border-color: var(--border-strong); background: var(--surface-raised); box-shadow: inset 0 0 0 1px var(--border-strong); }\n  .chip.all.active { color: var(--accent-ink); border-color: var(--accent); }\n\n  /* board */\n  .board {\n    display: grid;\n    grid-template-columns: repeat(3, minmax(300px, 1fr));\n    gap: 14px;\n    align-items: start;\n  }\n  @media (max-width: 900px) {\n    .board { grid-template-columns: 1fr; overflow-x: visible; }\n  }\n\n  .column {\n    background: var(--surface-raised);\n    border: 1px solid var(--border);\n    border-radius: 12px;\n    padding: 10px;\n    min-height: 120px;\n  }\n  .column-head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 6px 8px 10px;\n  }\n  .column-head .ch-left { display: flex; align-items: center; gap: 8px; }\n  .column-head .dot { width: 10px; height: 10px; border-radius: 3px; }\n  .column-head h2 {\n    font-size: 13px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n  }\n  .column-head .count {\n    font-size: 12px;\n    font-weight: 700;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border-radius: 999px;\n    padding: 1px 8px;\n  }\n  .column-empty {\n    font-size: 12.5px;\n    color: var(--text-faint);\n    padding: 18px 10px;\n    text-align: center;\n    border: 1px dashed var(--border-strong);\n    border-radius: 8px;\n  }\n\n  .card-list { display: flex; flex-direction: column; gap: 8px; }\n\n  .card {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-left: 4px solid var(--card-color, var(--border-strong));\n    border-radius: 8px;\n    padding: 10px 10px 8px;\n    box-shadow: var(--shadow-sm);\n  }\n  .card-top {\n    display: flex;\n    align-items: flex-start;\n    justify-content: space-between;\n    gap: 6px;\n  }\n  .tag {\n    display: inline-block;\n    font-size: 10px;\n    font-weight: 700;\n    letter-spacing: 0.3px;\n    color: #fff;\n    background: var(--card-color, var(--text-muted));\n    padding: 2px 7px;\n    border-radius: 999px;\n    white-space: nowrap;\n  }\n  .card-actions { display: flex; gap: 2px; flex: none; }\n  .icon-btn {\n    border: none;\n    background: transparent;\n    color: var(--text-faint);\n    padding: 3px;\n    border-radius: 5px;\n    display: inline-flex;\n  }\n  .icon-btn:hover { background: var(--surface-sunk); color: var(--text); }\n  .icon-btn.danger:hover { background: var(--status-todo-soft); color: var(--status-todo); }\n\n  .card-text {\n    font-size: 13px;\n    font-weight: 600;\n    margin-top: 6px;\n    cursor: pointer;\n  }\n  .card-text:hover { text-decoration: underline; text-decoration-color: var(--border-strong); }\n  .card-sub {\n    font-size: 12px;\n    color: var(--text-muted);\n    margin-top: 2px;\n  }\n\n  .card-due { margin-top: 6px; }\n  .due-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    font-size: 11px;\n    font-weight: 700;\n    padding: 3px 8px;\n    border-radius: 999px;\n  }\n  .due-badge svg { width: 11px; height: 11px; }\n  .due-badge.due-ok, .due-badge.due-done { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }\n  .due-badge.due-soon { background: var(--status-doing-soft); color: var(--status-doing); }\n  .due-badge.due-overdue { background: var(--status-todo-soft); color: var(--status-todo); }\n  .card.card-alert-overdue { border-left-color: var(--status-todo); box-shadow: inset 3px 0 0 var(--status-todo); }\n  .card.card-alert-soon { border-left-color: var(--status-doing); }\n\n  .card-bottom {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-top: 8px;\n    gap: 8px;\n  }\n\n  .status-pills { display: flex; gap: 4px; }\n  .status-pill {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 20px;\n    height: 20px;\n    border-radius: 5px;\n    border: 1.5px solid var(--border-strong);\n    background: var(--surface);\n    color: transparent;\n  }\n  .status-pill[data-checked=\"true\"] {\n    background: var(--pill-color);\n    border-color: var(--pill-color);\n    color: #fff;\n  }\n  .status-pill svg { width: 12px; height: 12px; }\n\n  .evidence-btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11.5px;\n    font-weight: 600;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border: 1px solid transparent;\n    border-radius: 999px;\n    padding: 3px 9px;\n  }\n  .evidence-btn:hover { border-color: var(--border-strong); color: var(--text); }\n  .evidence-btn svg { width: 12px; height: 12px; }\n\n  .confirm-row {\n    margin-top: 8px;\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    font-size: 12px;\n    color: var(--status-todo);\n    background: var(--status-todo-soft);\n    border-radius: 6px;\n    padding: 6px 8px;\n  }\n  .confirm-row .spacer { flex: 1; }\n\n  /* modal */\n  .overlay {\n    position: fixed;\n    inset: 0;\n    background: rgba(20, 16, 10, 0.5);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 20px;\n    z-index: 50;\n  }\n  .modal {\n    background: var(--surface);\n    border-radius: 14px;\n    box-shadow: var(--shadow-md);\n    width: 100%;\n    max-width: 480px;\n    max-height: 88vh;\n    overflow-y: auto;\n    padding: 22px;\n    border: 1px solid var(--border);\n  }\n  .modal.wide { max-width: 620px; }\n  .modal-head {\n    display: flex;\n    align-items: flex-start;\n    justify-content: space-between;\n    gap: 10px;\n    margin-bottom: 16px;\n  }\n  .modal-head h3 { font-size: 17px; }\n  .field { margin-bottom: 14px; }\n  .field label {\n    display: block;\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-muted);\n    margin-bottom: 6px;\n  }\n  .field select, .field input[type=\"text\"], .field textarea {\n    width: 100%;\n    border: 1px solid var(--border-strong);\n    background: var(--surface-raised);\n    color: var(--text);\n    border-radius: 8px;\n    padding: 9px 10px;\n    font-size: 13.5px;\n    resize: vertical;\n  }\n  .field textarea { min-height: 64px; }\n  .modal-actions {\n    display: flex;\n    justify-content: flex-end;\n    gap: 8px;\n    margin-top: 18px;\n  }\n\n  .btn-publish {\n    border-color: var(--status-done);\n    color: var(--status-done);\n  }\n  .btn-publish:hover:not(:disabled) {\n    background: var(--status-done-soft);\n    border-color: var(--status-done);\n  }\n\n  .modal-lead {\n    margin: 0 0 14px;\n    font-size: 13.5px;\n    color: var(--text-muted);\n  }\n  .steps {\n    margin: 0 0 16px;\n    padding-left: 20px;\n    font-size: 13px;\n    color: var(--text);\n  }\n  .steps li { margin-bottom: 7px; }\n  .steps b { font-weight: 700; }\n  .modal-note {\n    margin: 10px 0 0;\n    font-size: 12px;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border-radius: 8px;\n    padding: 9px 11px;\n  }\n\n  .detail-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }\n  .detail-status-row { display: flex; gap: 8px; margin-bottom: 16px; }\n  .detail-status-opt {\n    flex: 1;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 6px;\n    border: 1.5px solid var(--border-strong);\n    border-radius: 8px;\n    padding: 8px 6px;\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.3px;\n    color: var(--text-muted);\n  }\n  .detail-status-opt[data-checked=\"true\"] {\n    background: var(--opt-soft);\n    border-color: var(--opt-color);\n    color: var(--opt-color);\n  }\n  .detail-status-opt input { position: absolute; opacity: 0; pointer-events: none; }\n  .detail-status-opt svg { width: 13px; height: 13px; }\n\n  .evidence-section h4 {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-muted);\n    margin-bottom: 8px;\n  }\n  .evidence-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));\n    gap: 8px;\n    margin-bottom: 10px;\n  }\n  .evidence-item {\n    position: relative;\n    border: 1px solid var(--border);\n    border-radius: 8px;\n    overflow: hidden;\n    background: var(--surface-sunk);\n    aspect-ratio: 1;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    text-decoration: none;\n    color: var(--text-muted);\n  }\n  .evidence-item img { width: 100%; height: 100%; object-fit: cover; display: block; }\n  .evidence-item .file-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; padding: 6px; text-align: center; word-break: break-word; }\n  .evidence-item .file-icon svg { width: 22px; height: 22px; }\n  .evidence-remove {\n    position: absolute;\n    top: 3px;\n    right: 3px;\n    width: 18px;\n    height: 18px;\n    border-radius: 50%;\n    background: rgba(20,16,10,0.65);\n    color: #fff;\n    border: none;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 12px;\n    line-height: 1;\n  }\n  .evidence-remove:hover { background: var(--status-todo); }\n  .evidence-empty { font-size: 12px; color: var(--text-faint); margin-bottom: 10px; }\n  .upload-label {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border: 1.5px dashed var(--border-strong);\n    border-radius: 8px;\n    padding: 9px 12px;\n    font-size: 12.5px;\n    font-weight: 600;\n    color: var(--text-muted);\n    cursor: pointer;\n    width: 100%;\n    justify-content: center;\n  }\n  .upload-label:hover { border-color: var(--accent); color: var(--accent-ink); }\n  .upload-label input { display: none; }\n\n  .toast-wrap {\n    position: fixed;\n    bottom: 18px;\n    left: 50%;\n    transform: translateX(-50%);\n    z-index: 80;\n    display: flex;\n    flex-direction: column;\n    gap: 8px;\n    align-items: center;\n  }\n  .toast {\n    background: var(--text);\n    color: var(--bg);\n    font-size: 12.5px;\n    font-weight: 600;\n    padding: 9px 16px;\n    border-radius: 999px;\n    box-shadow: var(--shadow-md);\n    animation: toast-in 0.18s ease;\n  }\n  @keyframes toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }\n\n  .empty-board { text-align: center; padding: 60px 20px; color: var(--text-muted); }\n\n  @media (prefers-reduced-motion: reduce) {\n    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }\n  }\n</style>\n</head>\n<body>\n<div id=\"app\"></div>\n<script id=\"board-data\" type=\"application/json\">";
+  var HEAD_STATIC = "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>KANBAN Diretoria de Operações</title>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n<style>\n  :root {\n    --bg: #f1efe9;\n    --surface: #ffffff;\n    --surface-raised: #fbfaf6;\n    --surface-sunk: #e9e5db;\n    --border: #ded7c8;\n    --border-strong: #c9c0ac;\n    --text: #211c14;\n    --text-muted: #756a58;\n    --text-faint: #a49a86;\n    --accent: #b8500f;\n    --accent-ink: #7a3608;\n    --accent-soft: #f3e0cd;\n    --focus: #2f6f6b;\n\n    --status-todo: #a63c3c;\n    --status-todo-soft: #f6dede;\n    --status-doing: #a97a12;\n    --status-doing-soft: #f3e6c6;\n    --status-done: #2f7a4f;\n    --status-done-soft: #dcecdf;\n\n    --shadow-sm: 0 1px 2px rgba(33, 28, 20, 0.08);\n    --shadow-md: 0 8px 24px rgba(33, 28, 20, 0.16);\n    --radius: 10px;\n  }\n\n  @media (prefers-color-scheme: dark) {\n    :root:not([data-theme=\"light\"]) {\n      --bg: #15130f;\n      --surface: #1d1a14;\n      --surface-raised: #242019;\n      --surface-sunk: #110f0b;\n      --border: #38321f;\n      --border-strong: #4d452c;\n      --text: #f2ede1;\n      --text-muted: #b3a68c;\n      --text-faint: #7d735d;\n      --accent: #e2822f;\n      --accent-ink: #ffbe80;\n      --accent-soft: #3a2612;\n      --focus: #5fb3ac;\n\n      --status-todo: #e07070;\n      --status-todo-soft: #3a2020;\n      --status-doing: #dcab48;\n      --status-doing-soft: #3a2f14;\n      --status-done: #6ac48c;\n      --status-done-soft: #17301f;\n\n      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);\n      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);\n    }\n  }\n\n  :root[data-theme=\"dark\"] {\n    --bg: #15130f;\n    --surface: #1d1a14;\n    --surface-raised: #242019;\n    --surface-sunk: #110f0b;\n    --border: #38321f;\n    --border-strong: #4d452c;\n    --text: #f2ede1;\n    --text-muted: #b3a68c;\n    --text-faint: #7d735d;\n    --accent: #e2822f;\n    --accent-ink: #ffbe80;\n    --accent-soft: #3a2612;\n    --focus: #5fb3ac;\n\n    --status-todo: #e07070;\n    --status-todo-soft: #3a2020;\n    --status-doing: #dcab48;\n    --status-doing-soft: #3a2f14;\n    --status-done: #6ac48c;\n    --status-done-soft: #17301f;\n\n    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);\n    --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);\n  }\n\n  * { box-sizing: border-box; }\n\n  svg { width: 14px; height: 14px; flex: none; display: inline-block; vertical-align: middle; }\n\n  html, body {\n    background: var(--bg);\n    color: var(--text);\n  }\n\n  body {\n    margin: 0;\n    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;\n    font-size: 14px;\n    line-height: 1.45;\n    -webkit-font-smoothing: antialiased;\n  }\n\n  h1, h2, h3 { font-family: 'Manrope', 'Inter', sans-serif; text-wrap: balance; margin: 0; }\n\n  .tabular { font-variant-numeric: tabular-nums; }\n\n  button { font-family: inherit; cursor: pointer; }\n  input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }\n\n  a { color: var(--accent-ink); }\n\n  :focus-visible {\n    outline: 2px solid var(--focus);\n    outline-offset: 2px;\n  }\n\n  .app-shell {\n    max-width: 1400px;\n    margin: 0 auto;\n    padding: 20px 24px 64px;\n  }\n\n  /* header */\n  .topbar {\n    display: flex;\n    align-items: center;\n    gap: 18px;\n    flex-wrap: wrap;\n    padding-bottom: 18px;\n    border-bottom: 1px solid var(--border);\n    margin-bottom: 20px;\n  }\n  .brand {\n    display: flex;\n    align-items: center;\n    gap: 14px;\n    border: none;\n    background: none;\n    padding: 4px 6px 4px 0;\n    margin: 0;\n    border-radius: 8px;\n    text-align: left;\n    color: inherit;\n  }\n  .brand:hover { background: var(--surface-sunk); }\n  .brand img {\n    height: 46px;\n    width: auto;\n    display: block;\n    box-sizing: border-box;\n    background: #fff;\n    border-radius: 8px;\n    padding: 4px 7px;\n  }\n\n  .brand-divider {\n    width: 1px;\n    height: 38px;\n    background: var(--border-strong);\n    display: block;\n    flex: none;\n  }\n  .brand-title { display: flex; flex-direction: column; }\n  .brand-name {\n    font-family: 'Manrope', 'Inter', sans-serif;\n    font-size: 22px;\n    font-weight: 800;\n    letter-spacing: 0.3px;\n    color: var(--text);\n    line-height: 1.15;\n  }\n  .brand-title .subtitle {\n    font-size: 12.5px;\n    color: var(--text-muted);\n    font-weight: 600;\n    text-transform: uppercase;\n    letter-spacing: 0.6px;\n    margin-top: 2px;\n  }\n\n  .topbar-meta {\n    margin-left: auto;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    flex-wrap: wrap;\n  }\n  .updated-at {\n    font-size: 12px;\n    color: var(--text-faint);\n  }\n  .badge-readonly {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    background: var(--status-todo-soft);\n    color: var(--status-todo);\n    padding: 4px 10px;\n    border-radius: 999px;\n  }\n  .badge-local {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    background: var(--accent-soft);\n    color: var(--accent-ink);\n    padding: 4px 10px;\n    border-radius: 999px;\n    cursor: help;\n  }\n  .access-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11.5px;\n    font-weight: 700;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    padding: 4px 10px;\n    border-radius: 999px;\n  }\n  .access-badge svg { width: 11px; height: 11px; }\n\n  /* login gate */\n  .login-screen {\n    min-height: 100vh;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 24px;\n  }\n  .login-card {\n    width: 100%;\n    max-width: 380px;\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: 14px;\n    box-shadow: var(--shadow-md);\n    padding: 28px 26px;\n    text-align: center;\n  }\n  .login-card img {\n    height: 108px;\n    margin-bottom: 18px;\n    box-sizing: border-box;\n    background: #fff;\n    border-radius: 14px;\n    padding: 12px 18px;\n  }\n  .login-card h2 { font-size: 19px; margin-bottom: 4px; }\n  .login-card p.lead { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; }\n  .login-card .field { text-align: left; }\n  .login-card input[type=\"password\"] {\n    width: 100%;\n    border: 1px solid var(--border-strong);\n    background: var(--surface-raised);\n    color: var(--text);\n    border-radius: 8px;\n    padding: 11px 12px;\n    font-size: 14px;\n    letter-spacing: 1px;\n  }\n  .login-error {\n    font-size: 12.5px;\n    color: var(--status-todo);\n    background: var(--status-todo-soft);\n    border-radius: 8px;\n    padding: 8px 10px;\n    margin-bottom: 12px;\n  }\n  .login-card .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }\n  .login-note {\n    margin-top: 18px;\n    font-size: 11px;\n    color: var(--text-faint);\n    line-height: 1.5;\n  }\n\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border-radius: 8px;\n    border: 1px solid var(--border-strong);\n    background: var(--surface);\n    color: var(--text);\n    padding: 9px 14px;\n    font-size: 13px;\n    font-weight: 600;\n    transition: background 0.12s ease, border-color 0.12s ease, transform 0.05s ease;\n  }\n  .btn:hover { border-color: var(--accent); }\n  .btn:active { transform: translateY(1px); }\n  .btn-primary {\n    background: var(--accent);\n    border-color: var(--accent);\n    color: #fff9f2;\n  }\n  .btn-primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }\n  .btn-ghost {\n    border-color: transparent;\n    background: transparent;\n  }\n  .btn-ghost:hover { background: var(--surface-sunk); border-color: transparent; }\n  .btn-danger { color: var(--status-todo); border-color: var(--status-todo-soft); }\n  .btn-danger:hover { background: var(--status-todo-soft); border-color: var(--status-todo); }\n  .btn:disabled { opacity: 0.5; cursor: not-allowed; }\n  .btn-sm { padding: 5px 9px; font-size: 12px; border-radius: 6px; }\n  .icon { width: 14px; height: 14px; flex: none; }\n\n  /* cover — the contract menu */\n  .cover { padding-top: 4px; }\n\n  .cover-alert {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    background: var(--status-todo-soft);\n    color: var(--status-todo);\n    border: 1px solid var(--status-todo);\n    border-radius: 10px;\n    padding: 11px 16px;\n    font-size: 13px;\n    font-weight: 600;\n    margin-bottom: 16px;\n  }\n  .cover-alert svg { width: 16px; height: 16px; flex: none; }\n  .cover-alert b { font-weight: 800; }\n\n  .cover-hero {\n    display: flex;\n    align-items: flex-end;\n    justify-content: space-between;\n    gap: 24px;\n    flex-wrap: wrap;\n    padding: 4px 2px 22px;\n    border-bottom: 1px solid var(--border);\n    margin-bottom: 22px;\n  }\n  .cover-hero-text .eyebrow {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 1.1px;\n    color: var(--accent-ink);\n  }\n  .cover-hero-text h2 {\n    font-size: 34px;\n    font-weight: 800;\n    letter-spacing: -0.4px;\n    margin: 6px 0 4px;\n  }\n  .cover-hero-text p {\n    margin: 0;\n    font-size: 13.5px;\n    color: var(--text-muted);\n    max-width: 46ch;\n  }\n  .cover-hero-stats {\n    display: flex;\n    align-items: center;\n    gap: 22px;\n    flex-wrap: wrap;\n  }\n  .hero-stat { display: flex; flex-direction: column; gap: 1px; }\n  .hero-stat .hs-value {\n    font-family: 'Manrope', sans-serif;\n    font-size: 25px;\n    font-weight: 800;\n    line-height: 1;\n  }\n  .hero-stat .hs-label {\n    font-size: 10.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n  }\n  .hero-ring { width: 74px; height: 74px; }\n  .hero-ring .ring { width: 100%; height: 100%; }\n\n  .contract-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 14px;\n  }\n\n  .contract-card {\n    display: flex;\n    flex-direction: column;\n    align-items: stretch;\n    gap: 10px;\n    text-align: left;\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-top: 4px solid var(--card-color, var(--border-strong));\n    border-radius: 12px;\n    padding: 14px;\n    box-shadow: var(--shadow-sm);\n    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;\n    color: inherit;\n  }\n  .contract-card:hover {\n    transform: translateY(-2px);\n    box-shadow: var(--shadow-md);\n  }\n\n  .contract-plate {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: #ffffff;\n    border: 1px solid var(--border);\n    border-radius: 8px;\n    height: 62px;\n    padding: 9px 12px;\n  }\n  .contract-plate img,\n  .contract-plate svg {\n    max-width: 100%;\n    max-height: 100%;\n    width: auto;\n    height: auto;\n    object-fit: contain;\n    display: block;\n  }\n  .contract-plate.sm { height: 40px; width: 116px; padding: 5px 8px; flex: none; }\n  .mark-fallback { font-weight: 800; color: #17181A; font-size: 18px; }\n\n  .contract-id { display: flex; flex-direction: column; gap: 1px; }\n  .contract-name {\n    font-family: 'Manrope', sans-serif;\n    font-size: 17px;\n    font-weight: 800;\n    color: var(--text);\n    line-height: 1.15;\n  }\n  .contract-client {\n    font-size: 11.5px;\n    color: var(--text-muted);\n    font-weight: 600;\n  }\n\n  .contract-counts { display: flex; gap: 12px; }\n  .contract-counts .cc {\n    display: flex;\n    flex-direction: column;\n    font-size: 9.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-faint);\n    line-height: 1.25;\n  }\n  .contract-counts .cc b {\n    font-family: 'Manrope', sans-serif;\n    font-size: 17px;\n    font-weight: 800;\n    letter-spacing: 0;\n  }\n  .contract-counts .todo b { color: var(--status-todo); }\n  .contract-counts .doing b { color: var(--status-doing); }\n  .contract-counts .done b { color: var(--status-done); }\n\n  .contract-bar {\n    display: block;\n    height: 5px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .contract-bar > span {\n    display: block;\n    height: 100%;\n    border-radius: 999px;\n    background: var(--status-done);\n  }\n  .contract-foot {\n    display: flex;\n    justify-content: space-between;\n    font-size: 11px;\n    font-weight: 600;\n    color: var(--text-muted);\n  }\n\n  .all-contracts {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    width: 100%;\n    margin-top: 14px;\n    padding: 14px 16px;\n    border: 1.5px dashed var(--border-strong);\n    border-radius: 12px;\n    background: transparent;\n    color: var(--text-muted);\n    text-align: left;\n  }\n  .all-contracts:hover { border-color: var(--accent); color: var(--text); background: var(--surface); }\n  .all-contracts svg { width: 20px; height: 20px; }\n  .all-contracts span { display: flex; flex-direction: column; font-size: 11.5px; }\n  .all-contracts b { font-size: 14px; color: var(--text); font-family: 'Manrope', sans-serif; }\n\n  /* board header */\n  .board-head {\n    display: flex;\n    align-items: center;\n    gap: 14px;\n    flex-wrap: wrap;\n    margin-bottom: 16px;\n  }\n  .back-btn { padding-left: 8px; }\n  .board-title { display: flex; align-items: center; gap: 12px; }\n  .board-title .bt-text { display: flex; flex-direction: column; }\n  .board-title .bt-text b {\n    font-family: 'Manrope', sans-serif;\n    font-size: 19px;\n    font-weight: 800;\n    line-height: 1.15;\n  }\n  .board-title .bt-text span { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }\n\n  /* stats */\n  .stats {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));\n    gap: 12px;\n    margin-bottom: 18px;\n  }\n  @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }\n  .stat-tile.stat-overdue .value { color: var(--status-todo); }\n\n  .stat-tile {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: var(--radius);\n    padding: 14px 16px;\n    box-shadow: var(--shadow-sm);\n  }\n  .stat-tile .label {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n  }\n  .stat-tile .value {\n    font-family: 'Manrope', sans-serif;\n    font-size: 28px;\n    font-weight: 800;\n    margin-top: 4px;\n  }\n  .stat-tile.stat-todo .value { color: var(--status-todo); }\n  .stat-tile.stat-doing .value { color: var(--status-doing); }\n  .stat-tile.stat-done .value { color: var(--status-done); }\n  .stat-progress {\n    margin-top: 8px;\n    height: 6px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .stat-progress > span {\n    display: block;\n    height: 100%;\n    background: var(--status-done);\n    border-radius: 999px;\n  }\n\n  .company-progress {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-radius: var(--radius);\n    padding: 14px 16px;\n    margin-bottom: 20px;\n    box-shadow: var(--shadow-sm);\n  }\n  .company-progress .cp-title {\n    font-size: 11px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n    margin-bottom: 10px;\n  }\n  .cp-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));\n    gap: 10px 18px;\n  }\n  .cp-row { font-size: 12.5px; }\n  .cp-row-top {\n    display: flex;\n    justify-content: space-between;\n    align-items: baseline;\n    margin-bottom: 4px;\n  }\n  .cp-row .tag { font-size: 10.5px; }\n  .cp-row .count { color: var(--text-muted); }\n  .cp-bar {\n    height: 5px;\n    border-radius: 999px;\n    background: var(--surface-sunk);\n    overflow: hidden;\n  }\n  .cp-bar > span { display: block; height: 100%; border-radius: 999px; }\n\n  /* analytics */\n  .evo-legend {\n    display: flex;\n    gap: 16px;\n    font-size: 11.5px;\n    color: var(--text-muted);\n    margin-bottom: 8px;\n  }\n  .evo-legend span { display: inline-flex; align-items: center; gap: 6px; }\n  .evo-legend i {\n    display: inline-block;\n    width: 10px;\n    height: 10px;\n    border-radius: 3px;\n  }\n  .evo-chart { width: 100%; height: auto; display: block; }\n  .evo-empty { display: flex; flex-direction: column; gap: 4px; }\n\n  /* filters */\n  .filters {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    flex-wrap: wrap;\n    margin-bottom: 18px;\n  }\n  .filters .filters-label {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    color: var(--text-muted);\n    margin-right: 4px;\n  }\n  .chip {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border: 1px solid var(--border-strong);\n    background: var(--surface);\n    border-radius: 999px;\n    padding: 5px 12px 5px 8px;\n    font-size: 12px;\n    font-weight: 600;\n    color: var(--text-muted);\n  }\n  .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }\n  .chip.active { color: var(--text); border-color: var(--border-strong); background: var(--surface-raised); box-shadow: inset 0 0 0 1px var(--border-strong); }\n  .chip.all.active { color: var(--accent-ink); border-color: var(--accent); }\n\n  /* board */\n  .board {\n    display: grid;\n    grid-template-columns: repeat(3, minmax(300px, 1fr));\n    gap: 14px;\n    align-items: start;\n  }\n  @media (max-width: 900px) {\n    .board { grid-template-columns: 1fr; overflow-x: visible; }\n  }\n\n  .column {\n    background: var(--surface-raised);\n    border: 1px solid var(--border);\n    border-radius: 12px;\n    padding: 10px;\n    min-height: 120px;\n  }\n  .column-head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 6px 8px 10px;\n  }\n  .column-head .ch-left { display: flex; align-items: center; gap: 8px; }\n  .column-head .dot { width: 10px; height: 10px; border-radius: 3px; }\n  .column-head h2 {\n    font-size: 13px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n  }\n  .column-head .count {\n    font-size: 12px;\n    font-weight: 700;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border-radius: 999px;\n    padding: 1px 8px;\n  }\n  .column-empty {\n    font-size: 12.5px;\n    color: var(--text-faint);\n    padding: 18px 10px;\n    text-align: center;\n    border: 1px dashed var(--border-strong);\n    border-radius: 8px;\n  }\n\n  .card-list { display: flex; flex-direction: column; gap: 8px; }\n\n  .card {\n    background: var(--surface);\n    border: 1px solid var(--border);\n    border-left: 4px solid var(--card-color, var(--border-strong));\n    border-radius: 8px;\n    padding: 10px 10px 8px;\n    box-shadow: var(--shadow-sm);\n  }\n  .card-top {\n    display: flex;\n    align-items: flex-start;\n    justify-content: space-between;\n    gap: 6px;\n  }\n  .tag {\n    display: inline-block;\n    font-size: 10px;\n    font-weight: 700;\n    letter-spacing: 0.3px;\n    color: #fff;\n    background: var(--card-color, var(--text-muted));\n    padding: 2px 7px;\n    border-radius: 999px;\n    white-space: nowrap;\n  }\n  .card-actions { display: flex; gap: 2px; flex: none; }\n  .icon-btn {\n    border: none;\n    background: transparent;\n    color: var(--text-faint);\n    padding: 3px;\n    border-radius: 5px;\n    display: inline-flex;\n  }\n  .icon-btn:hover { background: var(--surface-sunk); color: var(--text); }\n  .icon-btn.danger:hover { background: var(--status-todo-soft); color: var(--status-todo); }\n\n  .card-text {\n    font-size: 13px;\n    font-weight: 600;\n    margin-top: 6px;\n    cursor: pointer;\n  }\n  .card-text:hover { text-decoration: underline; text-decoration-color: var(--border-strong); }\n  .card-sub {\n    font-size: 12px;\n    color: var(--text-muted);\n    margin-top: 2px;\n  }\n  .card-responsavel {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    font-size: 12px;\n    color: var(--text-muted);\n    margin-top: 4px;\n  }\n  .card-responsavel svg { width: 11px; height: 11px; flex: none; }\n\n  .card-due { margin-top: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }\n  .due-badge, .open-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    font-size: 11px;\n    font-weight: 700;\n    padding: 3px 8px;\n    border-radius: 999px;\n  }\n  .due-badge svg, .open-badge svg { width: 11px; height: 11px; }\n  .due-badge.due-ok, .due-badge.due-done { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }\n  .due-badge.due-soon { background: var(--status-doing-soft); color: var(--status-doing); }\n  .due-badge.due-overdue { background: var(--status-todo-soft); color: var(--status-todo); }\n  .open-badge { background: var(--surface-sunk); color: var(--text-muted); font-weight: 600; }\n  .card.card-alert-overdue { border-left-color: var(--status-todo); box-shadow: inset 3px 0 0 var(--status-todo); }\n  .card.card-alert-soon { border-left-color: var(--status-doing); }\n\n  .card-bottom {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-top: 8px;\n    gap: 8px;\n  }\n\n  .status-pills { display: flex; gap: 4px; }\n  .status-pill {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 20px;\n    height: 20px;\n    border-radius: 5px;\n    border: 1.5px solid var(--border-strong);\n    background: var(--surface);\n    color: transparent;\n  }\n  .status-pill[data-checked=\"true\"] {\n    background: var(--pill-color);\n    border-color: var(--pill-color);\n    color: #fff;\n  }\n  .status-pill svg { width: 12px; height: 12px; }\n\n  .evidence-btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11.5px;\n    font-weight: 600;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border: 1px solid transparent;\n    border-radius: 999px;\n    padding: 3px 9px;\n  }\n  .evidence-btn:hover { border-color: var(--border-strong); color: var(--text); }\n  .evidence-btn svg { width: 12px; height: 12px; }\n\n  .confirm-row {\n    margin-top: 8px;\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    font-size: 12px;\n    color: var(--status-todo);\n    background: var(--status-todo-soft);\n    border-radius: 6px;\n    padding: 6px 8px;\n  }\n  .confirm-row .spacer { flex: 1; }\n\n  /* modal */\n  .overlay {\n    position: fixed;\n    inset: 0;\n    background: rgba(20, 16, 10, 0.5);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 20px;\n    z-index: 50;\n  }\n  .modal {\n    background: var(--surface);\n    border-radius: 14px;\n    box-shadow: var(--shadow-md);\n    width: 100%;\n    max-width: 480px;\n    max-height: 88vh;\n    overflow-y: auto;\n    padding: 22px;\n    border: 1px solid var(--border);\n  }\n  .modal.wide { max-width: 620px; }\n  .modal-head {\n    display: flex;\n    align-items: flex-start;\n    justify-content: space-between;\n    gap: 10px;\n    margin-bottom: 16px;\n  }\n  .modal-head h3 { font-size: 17px; }\n  .field { margin-bottom: 14px; }\n  .field label {\n    display: block;\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-muted);\n    margin-bottom: 6px;\n  }\n  .field select, .field input[type=\"text\"], .field textarea {\n    width: 100%;\n    border: 1px solid var(--border-strong);\n    background: var(--surface-raised);\n    color: var(--text);\n    border-radius: 8px;\n    padding: 9px 10px;\n    font-size: 13.5px;\n    resize: vertical;\n  }\n  .field textarea { min-height: 64px; }\n  .modal-actions {\n    display: flex;\n    justify-content: flex-end;\n    gap: 8px;\n    margin-top: 18px;\n  }\n\n  .btn-publish {\n    border-color: var(--status-done);\n    color: var(--status-done);\n  }\n  .btn-publish:hover:not(:disabled) {\n    background: var(--status-done-soft);\n    border-color: var(--status-done);\n  }\n\n  .modal-lead {\n    margin: 0 0 14px;\n    font-size: 13.5px;\n    color: var(--text-muted);\n  }\n  .steps {\n    margin: 0 0 16px;\n    padding-left: 20px;\n    font-size: 13px;\n    color: var(--text);\n  }\n  .steps li { margin-bottom: 7px; }\n  .steps b { font-weight: 700; }\n  .modal-note {\n    margin: 10px 0 0;\n    font-size: 12px;\n    color: var(--text-muted);\n    background: var(--surface-sunk);\n    border-radius: 8px;\n    padding: 9px 11px;\n  }\n\n  .detail-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }\n  .detail-status-row { display: flex; gap: 8px; margin-bottom: 16px; }\n  .detail-status-opt {\n    flex: 1;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 6px;\n    border: 1.5px solid var(--border-strong);\n    border-radius: 8px;\n    padding: 8px 6px;\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.3px;\n    color: var(--text-muted);\n  }\n  .detail-status-opt[data-checked=\"true\"] {\n    background: var(--opt-soft);\n    border-color: var(--opt-color);\n    color: var(--opt-color);\n  }\n  .detail-status-opt input { position: absolute; opacity: 0; pointer-events: none; }\n  .detail-status-opt svg { width: 13px; height: 13px; }\n\n  .evidence-section h4 {\n    font-size: 11.5px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.4px;\n    color: var(--text-muted);\n    margin-bottom: 8px;\n  }\n  .evidence-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));\n    gap: 8px;\n    margin-bottom: 10px;\n  }\n  .evidence-item {\n    position: relative;\n    border: 1px solid var(--border);\n    border-radius: 8px;\n    overflow: hidden;\n    background: var(--surface-sunk);\n    aspect-ratio: 1;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    text-decoration: none;\n    color: var(--text-muted);\n  }\n  .evidence-item img { width: 100%; height: 100%; object-fit: cover; display: block; }\n  .evidence-item .file-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; padding: 6px; text-align: center; word-break: break-word; }\n  .evidence-item .file-icon svg { width: 22px; height: 22px; }\n  .evidence-remove {\n    position: absolute;\n    top: 3px;\n    right: 3px;\n    width: 18px;\n    height: 18px;\n    border-radius: 50%;\n    background: rgba(20,16,10,0.65);\n    color: #fff;\n    border: none;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 12px;\n    line-height: 1;\n  }\n  .evidence-remove:hover { background: var(--status-todo); }\n  .evidence-empty { font-size: 12px; color: var(--text-faint); margin-bottom: 10px; }\n  .upload-label {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    border: 1.5px dashed var(--border-strong);\n    border-radius: 8px;\n    padding: 9px 12px;\n    font-size: 12.5px;\n    font-weight: 600;\n    color: var(--text-muted);\n    cursor: pointer;\n    width: 100%;\n    justify-content: center;\n  }\n  .upload-label:hover { border-color: var(--accent); color: var(--accent-ink); }\n  .upload-label input { display: none; }\n\n  .save-bar {\n    position: fixed;\n    bottom: 74px;\n    left: 50%;\n    transform: translateX(-50%);\n    z-index: 70;\n    display: flex;\n    align-items: center;\n    gap: 14px;\n    background: var(--status-doing-soft);\n    color: var(--status-doing);\n    border: 1px solid var(--status-doing);\n    box-shadow: var(--shadow-md);\n    border-radius: 999px;\n    padding: 8px 10px 8px 16px;\n    animation: toast-in 0.18s ease;\n  }\n  .save-bar-text {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    font-size: 12.5px;\n    font-weight: 700;\n    white-space: nowrap;\n  }\n  .save-bar-text svg { width: 14px; height: 14px; flex: none; }\n  .save-bar .btn-primary {\n    background: var(--status-doing);\n    border-color: var(--status-doing);\n    color: #fff9f2;\n    white-space: nowrap;\n  }\n  @media (max-width: 640px) {\n    .save-bar { left: 12px; right: 12px; transform: none; flex-wrap: wrap; justify-content: center; }\n  }\n\n  .toast-wrap {\n    position: fixed;\n    bottom: 18px;\n    left: 50%;\n    transform: translateX(-50%);\n    z-index: 80;\n    display: flex;\n    flex-direction: column;\n    gap: 8px;\n    align-items: center;\n  }\n  .toast {\n    background: var(--text);\n    color: var(--bg);\n    font-size: 12.5px;\n    font-weight: 600;\n    padding: 9px 16px;\n    border-radius: 999px;\n    box-shadow: var(--shadow-md);\n    animation: toast-in 0.18s ease;\n  }\n  @keyframes toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }\n\n  .empty-board { text-align: center; padding: 60px 20px; color: var(--text-muted); }\n\n  @media (prefers-reduced-motion: reduce) {\n    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }\n  }\n</style>\n</head>\n<body>\n<div id=\"app\"></div>\n<script id=\"board-data\" type=\"application/json\">";
   var MID_STATIC = "<\/script>\n<script id=\"app-src\">\n";
   var TAIL_STATIC = "\n<\/script>\n</body>\n</html>";
 
@@ -1107,11 +1159,14 @@
     logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>',
     lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
     key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M21 2l-9.6 9.6"></path><path d="M15.5 7.5L18 5l3 3-2.5 2.5"></path></svg>',
-    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>'
   };
 
   var DOWNLOAD_NAME = "kanban-diretoria-operacoes.html";
   var LS_KEY = "kanban-diretoria-operacoes-v1";
+  var DIRTY_LS_KEY = "kanban-diretoria-operacoes-dirty-v1";
 
   // ---------- access gate ----------
   // This board has no server, so this is a lightweight door — enough to
@@ -1184,11 +1239,16 @@
   var READONLY = false;
   var saving = false;
   var publishing = false;
+  // true once a local edit has been saved to this browser but not yet sent
+  // to GitHub via "Publicar online" — drives the floating save bar so an
+  // unpublished change is hard to miss (see markDirty/clearDirty below).
+  var dirty = false;
   var ui = {
-    view: "cover",  // 'cover' = contract menu, 'board' = the kanban columns, 'analytics' = the stats/evolution panel
+    view: "cover",  // 'cover' = contract menu, 'board' = the kanban columns, 'analytics' = the stats/evolution panel, 'users' = cadastro de usuários
     filter: null,   // null = all contracts
-    modal: null,    // {type:'add'} | {type:'detail', cardId} | {type:'view-evidence', cardId, evId}
-    confirmDeleteCard: null
+    modal: null,    // {type:'add'} | {type:'detail', cardId} | {type:'view-evidence', cardId, evId} | {type:'add-user'} | {type:'edit-user', userId}
+    confirmDeleteCard: null,
+    confirmDeleteUser: null
   };
   var toasts = [];
   var toastSeq = 0;
@@ -1270,6 +1330,25 @@
       s.level === "soon" ? ICONS.alert + (s.days === 0 ? " Vence hoje" : s.days === 1 ? " Vence amanhã" : " Vence em " + s.days + " dias") :
       "Prazo " + fmtDayKeyShort(c.due);
     return '<span class="due-badge due-' + s.level + '">' + label + "</span>";
+  }
+
+  // Days the action has been open, counted from its creation date at local
+  // midnight so a card created "today" reads as 0, matching daysUntilDue.
+  function daysOpen(c) {
+    var created = new Date(c.createdAt);
+    if (isNaN(created.getTime())) return 0;
+    created.setHours(0, 0, 0, 0);
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.max(0, Math.round((today - created) / 86400000));
+  }
+  function openBadgeHtml(c) {
+    var days = daysOpen(c);
+    var label =
+      c.status === "done" ? "Levou " + days + (days === 1 ? " dia" : " dias") :
+      days === 0 ? "Aberta hoje" :
+      "Aberta há " + days + (days === 1 ? " dia" : " dias");
+    return '<span class="open-badge">' + ICONS.clock + " " + label + "</span>";
   }
   function fmtSize(bytes) {
     if (!bytes && bytes !== 0) return "";
@@ -1407,6 +1486,21 @@
     }
   }
 
+  // The dirty flag survives a reload (kept in its own localStorage key, not
+  // inside STATE) so if someone edits and closes the tab without publishing,
+  // the save bar is still there to remind them next time they open the board.
+  function markDirty() {
+    dirty = true;
+    try { localStorage.setItem(DIRTY_LS_KEY, "1"); } catch (e) { /* ignore */ }
+  }
+  function clearDirty() {
+    dirty = false;
+    try { localStorage.removeItem(DIRTY_LS_KEY); } catch (e) { /* ignore */ }
+  }
+  function restoreDirty() {
+    try { return localStorage.getItem(DIRTY_LS_KEY) === "1"; } catch (e) { return false; }
+  }
+
   function triggerBlobDownload(data, filename, mime) {
     try {
       var blob = data instanceof Blob ? data : new Blob([data], { type: mime || "text/html;charset=utf-8" });
@@ -1539,6 +1633,7 @@
       // the editor's own reload does not roll back to the older file.
       STATE.buildId = buildId;
       saveLocal();
+      clearDirty();
       publishing = false;
       render();
       toast("Publicado. O site atualiza em cerca de 1 minuto.");
@@ -1560,6 +1655,92 @@
         toast("Não foi possível publicar agora. Verifique a internet e tente de novo.");
       }
     }
+  }
+
+  // ---------- notificações automáticas (serviço kanban-notificacoes) ----------
+  //
+  // Serviço à parte (Node + Postgres + Resend + WhatsApp Cloud API), hospedado
+  // no Railway, que avisa o responsável por e-mail/WhatsApp quando uma ação é
+  // criada, muda de status ou fica atrasada. Este quadro nunca fica bloqueado
+  // por causa dele: toda chamada é "dispara e esquece" — se a API estiver
+  // fora do ar ou ainda não configurada, o quadro continua funcionando
+  // normalmente, só sem notificar dessa vez.
+
+  var NOTIF_API_BASE = "https://SEU-SERVICO-KANBAN-NOTIFICACOES.up.railway.app";
+  var NOTIF_API_TOKEN = "COLE_AQUI_O_MESMO_API_TOKEN_CONFIGURADO_NO_RAILWAY";
+
+  var NOTIF_USERS = [];        // cache local do cadastro de usuários
+  var notifUsersLoaded = false;
+
+  function notifConfigured() {
+    return !!NOTIF_API_BASE && NOTIF_API_BASE.indexOf("SEU-SERVICO") === -1;
+  }
+
+  async function notifFetch(path, opts) {
+    if (!notifConfigured()) return null;
+    opts = opts || {};
+    var headers = { "Content-Type": "application/json" };
+    if (opts.method && opts.method !== "GET") headers["x-api-token"] = NOTIF_API_TOKEN;
+    try {
+      var res = await fetch(NOTIF_API_BASE + path, {
+        method: opts.method || "GET",
+        headers: headers,
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      if (!res.ok) {
+        console.warn("[notificações] " + path + " -> " + res.status);
+        return null;
+      }
+      if (res.status === 204) return {};
+      return await res.json();
+    } catch (err) {
+      console.warn("[notificações] falha ao chamar " + path, err);
+      return null;
+    }
+  }
+
+  async function loadNotifUsers() {
+    var list = await notifFetch("/api/users");
+    if (list) {
+      NOTIF_USERS = list;
+      notifUsersLoaded = true;
+      render();
+    }
+  }
+
+  function notifUserById(id) {
+    if (!id) return null;
+    return NOTIF_USERS.find(function (u) { return String(u.id) === String(id); }) || null;
+  }
+
+  // Cria (primeira vez) ou atualiza (dai' em diante) o registro espelhado da
+  // ação no serviço de notificações. O id retornado fica guardado no próprio
+  // card (card.notifActionId) para as próximas sincronizações virarem PATCH.
+  async function notifSyncCard(card) {
+    if (!notifConfigured()) return;
+    var payload = {
+      title: card.text,
+      company: card.company,
+      observacoes: card.sub || null,
+      status: card.status,
+      due_date: card.due || null,
+      responsavel_id: card.responsavelId || null,
+      external_card_id: card.id,
+    };
+    if (card.notifActionId) {
+      await notifFetch("/api/actions/" + card.notifActionId, { method: "PATCH", body: payload });
+    } else {
+      var result = await notifFetch("/api/actions", { method: "POST", body: payload });
+      if (result && result.action && result.action.id) {
+        card.notifActionId = result.action.id;
+        saveLocal();  // só grava o vínculo; não mexe em histórico nem marca "não publicado"
+      }
+    }
+  }
+
+  async function notifDeleteCard(card) {
+    if (!notifConfigured() || !card || !card.notifActionId) return;
+    await notifFetch("/api/actions/" + card.notifActionId, { method: "DELETE" });
   }
 
   async function downloadBoardHtml() {
@@ -1691,6 +1872,11 @@
     recordHistorySnapshot();
     if (MODE === "local") {
       saveLocal();
+      // Local mode never talks to GitHub by itself — flag the change as
+      // unpublished so the floating save bar shows up and nudges whoever
+      // is editing to click "Publicar online" before it's forgotten.
+      markDirty();
+      render();
       return;
     }
     saving = true;
@@ -1736,6 +1922,8 @@
       company: data.company,
       text: data.text.trim(),
       sub: (data.sub || "").trim(),
+      responsavel: (data.responsavel || "").trim(),
+      responsavelId: data.responsavelId || null,  // liga ao cadastro de usuários (notificações)
       due: (data.due || "").trim() || null,  // "YYYY-MM-DD" or null
       status: data.status || "todo",
       evidence: [],
@@ -1745,6 +1933,7 @@
     ui.modal = null;
     render();
     persist();
+    notifSyncCard(card);
   }
 
   function moveCard(id, status) {
@@ -1754,17 +1943,24 @@
     c.status = status;
     render();
     persist();
+    notifSyncCard(c);
   }
 
-  function updateCardText(id, text, sub, due) {
+  function updateCardText(id, fields) {
     var c = findCard(id);
     if (!c) return;
     if (!isCompanyAllowed(c.company)) return;
-    c.text = text.trim() || c.text;
-    c.sub = (sub || "").trim();
-    c.due = (due || "").trim() || null;
+    c.text = (fields.text || "").trim() || c.text;
+    c.sub = (fields.sub || "").trim();
+    c.due = (fields.due || "").trim() || null;
+    // responsavel/responsavelId só são tocados quando o chamador manda algo
+    // explicitamente — evita apagar um responsável de texto livre (cadastro
+    // antigo) só porque o seletor de usuários ainda não carregou.
+    if (typeof fields.responsavel === "string") c.responsavel = fields.responsavel.trim();
+    if (typeof fields.responsavelId !== "undefined") c.responsavelId = fields.responsavelId || null;
     render();
     persist();
+    notifSyncCard(c);
     toast("Ação atualizada.");
   }
 
@@ -1772,11 +1968,13 @@
     var idx = STATE.cards.findIndex(function (c) { return c.id === id; });
     if (idx < 0) return;
     if (!isCompanyAllowed(STATE.cards[idx].company)) return;
+    var removed = STATE.cards[idx];
     STATE.cards.splice(idx, 1);
     ui.modal = null;
     ui.confirmDeleteCard = null;
     render();
     persist();
+    notifDeleteCard(removed);
   }
 
   async function compressImage(file) {
@@ -1901,12 +2099,29 @@
       '<div class="app-shell" style="padding-top:0">' +
       (ui.view === "cover" ? renderCover(stats) :
        ui.view === "analytics" ? renderAnalyticsView(stats) :
+       ui.view === "users" ? renderUsersView() :
        renderBoardView(computeStats(ui.filter))) +
       "</div>" +
       renderModal() +
+      renderSaveBar() +
       '<div class="toast-wrap" id="toast-wrap"></div>';
     renderToasts();
     applyPendingFocus();
+  }
+
+  // Floating bar shown whenever this browser has edits that only live in its
+  // own localStorage — i.e. every "Publicar online" click has been skipped
+  // since the last change. This is what makes an unpublished edit hard to
+  // miss, instead of relying on someone remembering the small topbar button.
+  function renderSaveBar() {
+    if (!dirty || READONLY || !canPublishOnline()) return "";
+    return (
+      '<div class="save-bar">' +
+      '<span class="save-bar-text">' + ICONS.alert + " Você tem alterações não publicadas" + "</span>" +
+      '<button class="btn btn-primary btn-sm" data-action="publish-online"' + (publishing ? " disabled" : "") + ">" +
+      ICONS.cloud + (publishing ? " Publicando…" : " Salvar (publicar online)") + "</button>" +
+      "</div>"
+    );
   }
 
   function renderLogin() {
@@ -1945,6 +2160,9 @@
       (MODE === "local" ? '<span class="badge-local" title="Esta é a cópia baixada: as alterações ficam salvas neste navegador. Baixe o HTML para levar o quadro para outro computador.">Cópia local</span>' : "") +
       '<span class="updated-at">Atualizado em ' + escapeHtml(fmtDate(STATE.updatedAt)) + "</span>" +
       '<button class="btn' + (ui.view === "analytics" ? " btn-primary" : "") + '" data-action="go-analytics" title="Estatísticas e evolução do quadro">' + ICONS.chart + " Análises</button>" +
+      (ACCESS.companies === "ALL"
+        ? '<button class="btn' + (ui.view === "users" ? " btn-primary" : "") + '" data-action="go-users" title="Cadastro de usuários para notificações">' + ICONS.user + " Usuários</button>"
+        : "") +
       (canPublishOnline()
         ? '<button class="btn btn-publish" data-action="publish-online"' + (publishing ? " disabled" : "") +
           ' title="Grava o quadro atual no site, para todo mundo ver a mesma versão">' +
@@ -2232,7 +2450,8 @@
       "</div>" +
       '<div class="card-text" data-action="open-detail" data-card="' + c.id + '">' + escapeHtml(c.text) + "</div>" +
       (c.sub ? '<div class="card-sub">' + escapeHtml(c.sub) + "</div>" : "") +
-      (due ? '<div class="card-due">' + dueBadgeHtml(c) + "</div>" : "") +
+      (c.responsavel ? '<div class="card-responsavel">' + ICONS.user + " " + escapeHtml(c.responsavel) + "</div>" : "") +
+      '<div class="card-due">' + openBadgeHtml(c) + (due ? dueBadgeHtml(c) : "") + "</div>" +
       (confirming
         ? '<div class="confirm-row">Excluir esta ação?<span class="spacer"></span><button class="btn btn-sm" data-action="cancel-delete-card">Cancelar</button><button class="btn btn-sm btn-danger" data-action="confirm-delete-card" data-card="' + c.id + '">Excluir</button></div>'
         : '<div class="card-bottom">' +
@@ -2250,6 +2469,8 @@
     if (ui.modal.type === "view-evidence") return renderEvidenceViewModal(ui.modal.cardId, ui.modal.evId);
     if (ui.modal.type === "gh-token") return renderGhTokenModal();
     if (ui.modal.type === "change-password") return renderChangePasswordModal();
+    if (ui.modal.type === "add-user") return renderUserModal(null);
+    if (ui.modal.type === "edit-user") return renderUserModal(notifUserById(ui.modal.userId));
     return "";
   }
 
@@ -2268,6 +2489,67 @@
       '<button type="button" class="btn" data-action="close-modal">Cancelar</button>' +
       '<button type="submit" class="btn btn-primary">Trocar senha</button>' +
       "</div>" +
+      "</form>" +
+      "</div>" +
+      "</div>"
+    );
+  }
+
+  // ---------- usuários (cadastro para notificações) ----------
+
+  function renderUsersView() {
+    var rows = NOTIF_USERS.map(function (u) {
+      var confirming = ui.confirmDeleteUser === u.id;
+      return (
+        "<tr>" +
+        "<td>" + escapeHtml(u.name) + "</td>" +
+        "<td>" + escapeHtml(u.cargo || "—") + "</td>" +
+        "<td>" + escapeHtml(u.email || "—") + "</td>" +
+        "<td>" + escapeHtml(u.whatsapp || "—") + "</td>" +
+        '<td class="users-actions">' +
+        (confirming
+          ? '<button class="btn btn-sm" data-action="cancel-delete-user">Cancelar</button>' +
+            '<button class="btn btn-danger btn-sm" data-action="confirm-delete-user" data-user="' + u.id + '">Confirmar remoção</button>'
+          : '<button class="btn btn-ghost btn-sm" data-action="edit-user" data-user="' + u.id + '">Editar</button>' +
+            '<button class="btn btn-ghost btn-sm" data-action="ask-delete-user" data-user="' + u.id + '">' + ICONS.trash + " Remover</button>") +
+        "</td>" +
+        "</tr>"
+      );
+    }).join("");
+
+    var body;
+    if (!notifConfigured()) {
+      body = '<div class="evidence-empty">O serviço de notificações ainda não foi configurado neste arquivo (veja NOTIF_API_BASE no código). Assim que o serviço estiver publicado no Railway, o cadastro de usuários aparece aqui.</div>';
+    } else if (!NOTIF_USERS.length) {
+      body = '<div class="evidence-empty">' + (notifUsersLoaded ? "Nenhum usuário cadastrado ainda." : "Carregando…") + "</div>";
+    } else {
+      body = '<table class="users-table"><thead><tr><th>Nome</th><th>Cargo</th><th>E-mail</th><th>WhatsApp</th><th></th></tr></thead><tbody>' + rows + "</tbody></table>";
+    }
+
+    return (
+      '<div class="board-head">' +
+      '<button class="btn btn-ghost back-btn" data-action="go-cover">' + ICONS.back + " Contratos</button>" +
+      '<span class="board-title"><span class="bt-text"><b>Usuários</b><span>Cadastro para notificações por e-mail e WhatsApp</span></span></span>' +
+      "</div>" +
+      '<div class="modal-actions" style="justify-content:flex-start; margin: 4px 0 16px;">' +
+      '<button class="btn btn-primary" data-action="open-add-user"' + (notifConfigured() ? "" : " disabled") + ">" + ICONS.plus + " Novo usuário</button>" +
+      "</div>" +
+      body
+    );
+  }
+
+  function renderUserModal(editingUser) {
+    var isEdit = !!editingUser;
+    return (
+      '<div class="overlay" data-action="close-modal-backdrop">' +
+      '<div class="modal" data-stop="1">' +
+      '<div class="modal-head"><h3>' + (isEdit ? "Editar usuário" : "Novo usuário") + '</h3><button class="icon-btn" data-action="close-modal">✕</button></div>' +
+      '<form id="user-form">' +
+      '<div class="field"><label for="u-name">Nome</label><input id="u-name" type="text" required value="' + (isEdit ? escapeHtml(editingUser.name) : "") + '" /></div>' +
+      '<div class="field"><label for="u-cargo">Cargo</label><input id="u-cargo" type="text" value="' + (isEdit ? escapeHtml(editingUser.cargo || "") : "") + '" /></div>' +
+      '<div class="field"><label for="u-email">E-mail</label><input id="u-email" type="email" value="' + (isEdit ? escapeHtml(editingUser.email || "") : "") + '" placeholder="nome@triunfologistica.com.br" /></div>' +
+      '<div class="field"><label for="u-whatsapp">WhatsApp</label><input id="u-whatsapp" type="text" value="' + (isEdit ? escapeHtml(editingUser.whatsapp || "") : "") + '" placeholder="Ex: 21999998888 (DDI+DDD+número)" /></div>' +
+      '<div class="modal-actions"><button type="button" class="btn" data-action="close-modal">Cancelar</button><button type="submit" class="btn btn-primary">' + (isEdit ? "Salvar" : "Adicionar") + "</button></div>" +
       "</form>" +
       "</div>" +
       "</div>"
@@ -2306,6 +2588,9 @@
   function renderAddModal() {
     var companyOptions = allowedCompanies().map(function (c) { return '<option value="' + c.id + '">' + escapeHtml(c.label) + "</option>"; }).join("");
     var statusOptions = STATUSES.map(function (s) { return '<option value="' + s.id + '">' + escapeHtml(s.label) + "</option>"; }).join("");
+    var responsavelOptions = '<option value="">— selecione —</option>' + NOTIF_USERS.map(function (u) {
+      return '<option value="' + u.id + '">' + escapeHtml(u.name) + (u.cargo ? " — " + escapeHtml(u.cargo) : "") + "</option>";
+    }).join("");
     return (
       '<div class="overlay" data-action="close-modal-backdrop">' +
       '<div class="modal" data-stop="1">' +
@@ -2314,6 +2599,9 @@
       '<div class="field"><label for="f-company">Empresa</label><select id="f-company" required>' + companyOptions + "</select></div>" +
       '<div class="field"><label for="f-text">Ação</label><textarea id="f-text" required placeholder="Descreva a ação..."></textarea></div>' +
       '<div class="field"><label for="f-sub">Detalhe (opcional)</label><input id="f-sub" type="text" placeholder="Observação adicional" /></div>' +
+      '<div class="field"><label for="f-responsavel">Responsável (opcional)</label><select id="f-responsavel">' + responsavelOptions + "</select>" +
+      (NOTIF_USERS.length ? "" : '<p class="modal-note">Nenhum usuário cadastrado ainda — abra "Usuários" na barra de cima para cadastrar (necessário para receber notificação por e-mail/WhatsApp).</p>') +
+      "</div>" +
       '<div class="field"><label for="f-due">Prazo (opcional)</label><input id="f-due" type="date" /></div>' +
       '<div class="field"><label for="f-status">Situação inicial</label><select id="f-status">' + statusOptions + "</select></div>" +
       '<div class="modal-actions"><button type="button" class="btn" data-action="close-modal">Cancelar</button><button type="submit" class="btn btn-primary">Adicionar</button></div>' +
@@ -2342,13 +2630,25 @@
       ? '<div class="evidence-grid">' + evidence.map(function (e) { return renderEvidenceThumb(c.id, e); }).join("") + "</div>"
       : '<div class="evidence-empty">Nenhuma evidência anexada.</div>';
 
+    var matchedId = c.responsavelId ? String(c.responsavelId) : null;
+    var isLegacyResp = !!(c.responsavel && !matchedId);
+    var respOptions = '<option value="">— nenhum —</option>' +
+      (isLegacyResp ? '<option value="__legacy__" selected>' + escapeHtml(c.responsavel) + " (cadastro antigo)</option>" : "") +
+      NOTIF_USERS.map(function (u) {
+        var sel = matchedId === String(u.id);
+        return '<option value="' + u.id + '"' + (sel ? " selected" : "") + '>' + escapeHtml(u.name) + (u.cargo ? " — " + escapeHtml(u.cargo) : "") + "</option>";
+      }).join("");
+
     return (
       '<div class="overlay" data-action="close-modal-backdrop">' +
       '<div class="modal wide" data-stop="1">' +
       '<div class="modal-head"><h3>Detalhes da ação</h3><button class="icon-btn" data-action="close-modal">✕</button></div>' +
-      '<div class="detail-meta"><span class="tag" style="background:' + company.color + '">' + escapeHtml(company.label) + '</span><span class="updated-at">Criada em ' + escapeHtml(fmtDate(c.createdAt)) + "</span>" + dueBadgeHtml(c) + "</div>" +
+      '<div class="detail-meta"><span class="tag" style="background:' + company.color + '">' + escapeHtml(company.label) + '</span><span class="updated-at">Criada em ' + escapeHtml(fmtDate(c.createdAt)) + "</span>" + openBadgeHtml(c) + dueBadgeHtml(c) + "</div>" +
       '<div class="field"><label>Ação</label><textarea id="d-text"' + (READONLY ? " disabled" : "") + ">" + escapeHtml(c.text) + "</textarea></div>" +
       '<div class="field"><label>Detalhe</label><input id="d-sub" type="text" value="' + escapeHtml(c.sub || "") + '"' + (READONLY ? " disabled" : "") + " /></div>" +
+      '<div class="field"><label>Responsável</label><select id="d-responsavel"' + (READONLY ? " disabled" : "") + ">" + respOptions + "</select>" +
+      (isLegacyResp ? '<p class="modal-note">Cadastrado antes como texto livre. Selecione um usuário da lista para habilitar notificações por e-mail/WhatsApp.</p>' : "") +
+      "</div>" +
       '<div class="field"><label>Prazo</label><input id="d-due" type="date" value="' + escapeHtml(c.due || "") + '"' + (READONLY ? " disabled" : "") + " /></div>" +
       (READONLY ? "" : '<div class="modal-actions" style="margin-top:-6px;margin-bottom:14px;justify-content:flex-start"><button class="btn btn-sm" data-action="save-detail-text" data-card="' + c.id + '">Salvar alterações</button></div>') +
       '<div class="field"><label>Situação</label><div class="detail-status-row">' + statusOpts + "</div></div>" +
@@ -2462,9 +2762,28 @@
       window.scrollTo(0, 0);
       return;
     }
+    if (action === "go-users") {
+      if (ACCESS.companies !== "ALL") return;
+      ui.view = "users";
+      ui.confirmDeleteUser = null;
+      render();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (action === "open-add-user") { ui.modal = { type: "add-user" }; render(); return; }
+    if (action === "edit-user") { ui.modal = { type: "edit-user", userId: el.dataset.user }; render(); return; }
+    if (action === "ask-delete-user") { ui.confirmDeleteUser = el.dataset.user; render(); return; }
+    if (action === "cancel-delete-user") { ui.confirmDeleteUser = null; render(); return; }
+    if (action === "confirm-delete-user") {
+      var delUserId = el.dataset.user;
+      ui.confirmDeleteUser = null;
+      notifFetch("/api/users/" + delUserId, { method: "DELETE" }).then(function () { loadNotifUsers(); });
+      render();
+      return;
+    }
     if (action === "logout") {
       setAccess(null);
-      ui = { view: "cover", filter: null, modal: null, confirmDeleteCard: null };
+      ui = { view: "cover", filter: null, modal: null, confirmDeleteCard: null, confirmDeleteUser: null };
       loginError = "";
       render();
       window.scrollTo(0, 0);
@@ -2544,7 +2863,20 @@
       var textEl = document.getElementById("d-text");
       var subEl = document.getElementById("d-sub");
       var dueEl = document.getElementById("d-due");
-      if (textEl) updateCardText(card, textEl.value, subEl ? subEl.value : "", dueEl ? dueEl.value : "");
+      var respEl = document.getElementById("d-responsavel");
+      var fields = {
+        text: textEl ? textEl.value : "",
+        sub: subEl ? subEl.value : "",
+        due: dueEl ? dueEl.value : "",
+      };
+      if (respEl && respEl.value !== "__legacy__") {
+        // "__legacy__" = campo não tocado (responsável de texto livre antigo,
+        // sem usuário correspondente cadastrado) — nesse caso preserva como estava.
+        var respUser = notifUserById(respEl.value);
+        fields.responsavelId = respEl.value || null;
+        fields.responsavel = respUser ? respUser.name : "";
+      }
+      if (textEl) updateCardText(card, fields);
       return;
     }
   });
@@ -2630,11 +2962,35 @@
       var company = document.getElementById("f-company").value;
       var text = document.getElementById("f-text").value;
       var sub = document.getElementById("f-sub").value;
+      var responsavelId = document.getElementById("f-responsavel").value;
+      var responsavelUser = notifUserById(responsavelId);
       var due = document.getElementById("f-due").value;
       var status = document.getElementById("f-status").value;
       if (!text.trim()) return;
-      addCard({ company: company, text: text, sub: sub, due: due, status: status });
+      addCard({
+        company: company, text: text, sub: sub,
+        responsavel: responsavelUser ? responsavelUser.name : "",
+        responsavelId: responsavelId || null,
+        due: due, status: status,
+      });
       toast("Ação adicionada.");
+    }
+    if (e.target && e.target.id === "user-form") {
+      e.preventDefault();
+      var uName = document.getElementById("u-name").value.trim();
+      var uCargo = document.getElementById("u-cargo").value.trim();
+      var uEmail = document.getElementById("u-email").value.trim();
+      var uWhatsapp = document.getElementById("u-whatsapp").value.trim();
+      if (!uName) return;
+      var editingId = ui.modal && ui.modal.type === "edit-user" ? ui.modal.userId : null;
+      var body = { name: uName, cargo: uCargo, email: uEmail, whatsapp: uWhatsapp };
+      var call = editingId
+        ? notifFetch("/api/users/" + editingId, { method: "PATCH", body: body })
+        : notifFetch("/api/users", { method: "POST", body: body });
+      call.then(function () { loadNotifUsers(); });
+      ui.modal = null;
+      render();
+      toast(editingId ? "Usuário atualizado." : "Usuário adicionado.");
     }
   });
 
@@ -2650,6 +3006,7 @@
   (async function boot() {
     await initCapability();
     STATE = loadState();
+    dirty = MODE === "local" && restoreDirty();
     ACCESS = restoreAccess();
     if (ACCESS && allowedCompanies().length === 1) {
       ui.view = "board";
@@ -2658,9 +3015,9 @@
     restoreUiAfterReload();
     try { sessionStorage.removeItem("kanban-reopen"); } catch (e) { /* ignore */ }
     render();
+    loadNotifUsers();
   })();
 })();
-
 
 </script>
 </body>
